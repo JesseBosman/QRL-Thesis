@@ -16,8 +16,22 @@ Week 1 Planning:
 - finish Tensorflow Quantum notebooks, especially RL one
 
 Week 2 Planning:
+- Get TFQ running on alice with vscode and github
 - Get the fox in a hole game from unitary (aleksandar vragen)
 - start on REINFORCE code, take snippets from assignments
-- get class. REINFORCE working on Fox In A Hole
-- 
+- get class. REINFORCE working on Classical Fox In A Hole (CFIAH)
+- start replicating quantum circuits from either a paper or tensorflow notebook
+
+Week 3 Planning:
+- replicate quantum circuits from either a paper or tensorflow notebook
+- Get QRL working on CFIAH
+
+
+Week 4 Planning:
+- run QRL vs RL on CFIAH with N reps for stat. results
+- put data, results, observations in kladversie thesis
+- discuss results with evert
+
+Week 5 Planning
+- start with creation of quantum game
 

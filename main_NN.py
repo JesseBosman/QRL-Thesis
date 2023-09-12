@@ -6,17 +6,19 @@ env_name = "CartPole-v1"
 n_episodes = 10000
 batch_size=10
 n_actions = 2
-state_bounds = np.array([4.8000002, 3.4028235e+38, 4.1887903e-01, 3.4028235e+38])
+state_bounds = np.array([2.4, 2.5, 0.21, 2.5])
 gamma = 1
 input_dim = 4
+learning_rate = 0.01
 
 agent = reinforce_agent(batch_size=batch_size)
 
 # Start training the agent
+model = PolicyModel(input_dim=input_dim, n_hidden_layers=2, n_nodes_per_layer=5, learning_rate= learning_rate)
 episode_reward_history = []
 for batch in range(n_episodes // batch_size):
     # Gather episodes
-    model = PolicyModel(input_dim=input_dim, n_hidden_layers=2, n_nodes_per_layer=5)
+    
     episodes = agent.gather_episodes(state_bounds, n_actions, model, batch_size, env_name)
 
     # Group states, actions and returns in numpy arrays

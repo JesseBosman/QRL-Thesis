@@ -12,18 +12,22 @@ Inleveren versie voor laatste feedback Evert: 12-02 (week 22)
 Week 1 Planning:
 - get tfq running (DONE)
 - get ALICE permission
-- write starter to Quantum Circuit theory thesis
+- write starter to Quantum Circuit theory thesis (DONE)
 - finish Tensorflow Quantum notebooks, especially RL one (DONE)
 
 Week 2 Planning:
+- Get the fox in a hole game from unitary (aleksandar vragen) (DONE)
+- start on REINFORCE code, take snippets from assignments (DONE)
+- get class. REINFORCE working on Cartpole (DONE)
+- start replicating quantum circuits from either a paper or tensorflow notebook (DONE)
+- get q. REINFORCE working on Cartpole(DONE)
 - Get TFQ running on alice with vscode and github
-- Get the fox in a hole game from unitary (aleksandar vragen)
-- start on REINFORCE code, take snippets from assignments
-- get class. REINFORCE working on Classical Fox In A Hole (CFIAH)
-- start replicating quantum circuits from either a paper or tensorflow notebook
+- rewrite Fox in a hole to environment for agent
+- try with very basic encoding scheme (0 for not there, 1 for unsure, 2 for there)
 
 Week 3 Planning:
-- replicate quantum circuits from either a paper or tensorflow notebook
+- Create encoding scheme/ way to encorperate previous actions and states into decision (RNN, something else.)
+- get RL working of CFIAH
 - Get QRL working on CFIAH
 
 
@@ -33,5 +37,11 @@ Week 4 Planning:
 - discuss results with evert
 
 Week 5 Planning
-- start with creation of quantum game
+- Perform the same comparison but then on the already implemented quantum version in the fox in a hole code
+- write out the comparison
+- finish next quantum version of the game
+- write out comparison
+
+Week 6 Planning:
+- discuss with evert jan and alek about next steps: (try more versions of the game, Start investigating effect of changing the circuit -> [completely different layers, different amount of layers, etc], try to expand towards games with larger/compexer states such as atari or mujoco)
 

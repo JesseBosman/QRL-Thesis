@@ -30,8 +30,8 @@ class reinforce_agent():
 
       while not all(done):
           unfinished_ids = [i for i in range(batch_size) if not done[i]]
-        #   normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
-          normalized_states = [s for i, s in enumerate(states) if not done[i]]
+          normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
+        #   normalized_states = [s for i, s in enumerate(states) if not done[i]]
 
           for i, state in zip(unfinished_ids, normalized_states):
               trajectories[i]['states'].append(state)

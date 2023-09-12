@@ -3,39 +3,21 @@
 """
 
 import tensorflow as tf
-# import tensorflow_quantum as tfq
+import tensorflow_quantum as tfq
 
-# import gym, cirq, sympy
-import gymnasium as gym
+import gym, cirq, sympy
+# import gymnasium as gym
 import numpy as np
 from functools import reduce
 from collections import deque, defaultdict
 import matplotlib.pyplot as plt
-# from cirq.contrib.svg import SVGCircuit
+from cirq.contrib.svg import SVGCircuit
 
 class reinforce_agent():
   def __init__(self, batch_size):
     self.batch_size=batch_size
     self.brain = None
     pass
-
-# dit moet in de PCQ class denk ik
-  # @tf.function
-  # def update(states, actions, returns, model):
-  #   # need to be able to specify which optimizer and which model
-  #   states = tf.convert_to_tensor(states)
-  #   actions = tf.convert_to_tensor(actions)
-  #   returns = tf.convert_to_tensor(returns)
-
-  #   with tf.GradientTape() as tape:
-  #       tape.watch(model.trainable_variables)
-  #       logits = model(states)
-  #       p_actions = tf.gather_nd(logits, actions)
-  #       log_probs = tf.math.log(p_actions)
-  #       loss = tf.math.reduce_sum(-log_probs * returns) / batch_size
-  #   grads = tape.gradient(loss, model.trainable_variables)
-  #   for optimizer, w in zip([optimizer_in, optimizer_var, optimizer_out], [w_in, w_var, w_out]):
-  #       optimizer.apply_gradients([(grads[w], model.trainable_variables[w])])
 
   def gather_episodes(self,state_bounds, n_actions, model, batch_size, env_name):
       """Interact with environment in batched fashion."""
@@ -44,11 +26,11 @@ class reinforce_agent():
       envs = [gym.make(env_name) for _ in range(batch_size)]
 
       done = [False for _ in range(batch_size)]
-      states = [e.reset()[0] for e in envs]
+      states = [e.reset()for e in envs]
 
       while not all(done):
           unfinished_ids = [i for i in range(batch_size) if not done[i]]
-          # normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
+        #   normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
           normalized_states = [s for i, s in enumerate(states) if not done[i]]
 
           for i, state in zip(unfinished_ids, normalized_states):
@@ -62,7 +44,7 @@ class reinforce_agent():
           states = [None for i in range(batch_size)]
           for i, policy in zip(unfinished_ids, action_probs.numpy()):
               action = np.random.choice(n_actions, p=policy)
-              states[i], reward, done[i], _ = envs[i].step(action)[:-1] # this slicing is added because otherwise tensorflow adds a {} to the list.
+              states[i], reward, done[i], _ = envs[i].step(action) 
               trajectories[i]['actions'].append(action)
               trajectories[i]['rewards'].append(reward)
 

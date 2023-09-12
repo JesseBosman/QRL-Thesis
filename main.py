@@ -16,7 +16,7 @@ agent = reinforce_agent(batch_size=batch_size)
 episode_reward_history = []
 for batch in range(n_episodes // batch_size):
     # Gather episodes
-    model = PolicyModel(input_dim=input_dim, n_hidden_layers=2, n_nodes_per_layer=5, learning_rate=0.0000001)
+    model = PolicyModel(input_dim=input_dim, n_hidden_layers=2, n_nodes_per_layer=5)
     episodes = agent.gather_episodes(state_bounds, n_actions, model, batch_size, env_name)
 
     # Group states, actions and returns in numpy arrays

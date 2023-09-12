@@ -15,7 +15,7 @@ class PolicyModel():
 
     def build_model(self):
         self.model = tf.keras.Sequential()
-        self.model.add(tf.keras.layers.Input(shape=self.input_dim))
+        self.model.add(tf.keras.layers.Input(shape=(self.input_dim,)))
         for _ in range(self.n_hidden_layers):
             self.model.add(tf.keras.layers.Dense(self.n_nodes_per_layer, activation=self.activation_function))
 
@@ -31,11 +31,11 @@ class PolicyModel():
         
 
         with tf.GradientTape() as tape:
-            tape.watch(states)
+            tape.watch(self.model.trainable_variables)
             logits = self.model(states)
             p_actions = tf.gather_nd(logits, actions)
             log_probs = tf.math.log(p_actions)
-            loss = tf.math.reduce_sum(-log_probs * returns) #/ batch_size
+            loss = tf.math.reduce_sum(-log_probs * returns) / batch_size
             # loss = -1*tf.math.multiply(log_probs, returns)
 
         # print("states")

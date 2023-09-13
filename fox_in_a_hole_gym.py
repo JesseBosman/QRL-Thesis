@@ -4,32 +4,34 @@ import numpy as np
 class FoxInAHole(gym.Env):
     def __init__(self, n_holes=5, env_config={}):
         self.n_holes = n_holes
+        self.hole_nr = None
         self.state = None
+        self.guess_counter = 0
+        #super.__init__()
 
     def reset(self):
         # reset the environment to initial random state
-        hole_nr = np.random.randint(0,self.n_holes,1)
-        self.state = hole_nr
-        observation = np.ones(self.n_holes)
-        return observation
+        self.hole_nr = np.random.randint(low=0,high=self.n_holes, size= 1)
+        self.state = -1*np.ones(int(2*self.n_holes-2))
+        self.guess_counter = 0
+        return self.state
     
     def move_fox(self):
-        hole_nr = self.state
         max_hole_nr = self.n_holes-1
-
+        hole_nr = self.hole_nr
         if hole_nr < max_hole_nr and hole_nr > 0:
             coin = np.random.random(1)
 
             if coin < 0.5:
-                self.state -= 1
+                self.hole_nr -= 1
             else:
-                self.state += 1
+                self.hole_nr += 1
             
         elif hole_nr == max_hole_nr:
-            self.state -= 1
+            self.hole_nr -= 1
         
         else:
-            self.state += 1
+            self.hole_nr += 1
         
 
     def step(self, action):
@@ -44,18 +46,24 @@ class FoxInAHole(gym.Env):
             reward (int): the reward for the guess
 
         """
-        if action == self.state:
+
+        if action == self.hole_nr:
             reward = 1
-            observation = np.zeros(self.n_holes)
-            observation[action] = 2
+            self.state[self.guess_counter]=action
+            done = True
+        
+        elif self.guess_counter == 2*self.n_holes-3:
+            reward = -1
+            self.state[self.guess_counter]=action
             done = True
         else:
             reward = -1
-            observation = np.ones(self.n_holes)
-            observation[action] = 0
+            self.state[self.guess_counter]=action
             done = False
 
             self.move_fox()
+        
+        self.guess_counter+=1
 
 
-        return observation, reward, done, {}
+        return self.state, reward, done, {}

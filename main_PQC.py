@@ -3,16 +3,20 @@ from PQC import generate_model_policy, reinforce_update
 import tensorflow as tf
 import numpy as np
 
+
 env_name = "foxinahole"
-n_episodes = 5000
+n_episodes = 10000
 batch_size=100
-n_actions = 5
-n_layers =5
+n_holes = 5
+n_actions = n_holes
+n_layers = 3
 state_bounds = 1
 gamma = 1
-input_dim = 5
+input_dim = 2*n_holes -2
 averaging_window = 100
 
+plot_policy = False
+plot_curve = True
 agent = reinforce_agent(batch_size=batch_size)
 
 # As the different sets of parameters require different learning rates, create seperate optimizers
@@ -31,6 +35,7 @@ ws= [w_in, w_var, w_out]
 # Start training the agent
 episode_reward_history = []
 model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
+total_reward_history = []
 for batch in range(n_episodes // batch_size):
     # Gather episodes
     
@@ -54,8 +59,10 @@ for batch in range(n_episodes // batch_size):
 
     avg_rewards = np.mean(episode_reward_history[-averaging_window:])
 
-    print('Finished episode', (batch + 1) * batch_size,
-          'Average rewards: ', avg_rewards)
 
-    if avg_rewards >= 500.0:
-        break
+
+    # if avg_rewards >= 500.0:
+    #     break
+
+episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, 5, env_name)
+[print(ep['states'][-1]) for ep in episodes]

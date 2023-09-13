@@ -30,7 +30,7 @@ class reinforce_agent():
         envs = [gym.make(env_name) for _ in range(batch_size)]
       
       else:
-         envs = [FoxInAHole(n_holes=input_dim) for _ in range(batch_size)]
+         envs = [FoxInAHole(n_holes=(input_dim+2)/2) for _ in range(batch_size)]
 
       done = [False for _ in range(batch_size)]
       states = [e.reset()for e in envs]
@@ -76,3 +76,5 @@ class reinforce_agent():
     returns = returns.tolist()
 
     return returns
+
+

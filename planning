@@ -21,9 +21,10 @@ Week 2 Planning:
 - get class. REINFORCE working on Cartpole (DONE)
 - start replicating quantum circuits from either a paper or tensorflow notebook (DONE)
 - get q. REINFORCE working on Cartpole(DONE)
+- rewrite Fox in a hole to environment for agent (DONE)
+- try with very basic encoding scheme (0 for not there, 1 for unsure, 2 for there) (DONE)
 - Get TFQ running on alice with vscode and github
-- rewrite Fox in a hole to environment for agent
-- try with very basic encoding scheme (0 for not there, 1 for unsure, 2 for there)
+
 
 Week 3 Planning:
 - Create encoding scheme/ way to encorperate previous actions and states into decision (RNN, something else.)

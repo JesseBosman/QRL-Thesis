@@ -2,24 +2,26 @@ from REINFORCE import reinforce_agent
 from NN import PolicyModel
 import numpy as np
 
-env_name = "CartPole-v1"
-n_episodes = 10000
-batch_size=10
-n_actions = 2
-state_bounds = np.array([2.4, 2.5, 0.21, 2.5])
+env_name = "FoxInAHole"
+n_episodes = 5000
+batch_size=100
+n_actions = 5
+state_bounds = 1
 gamma = 1
-input_dim = 4
+input_dim = 5
 learning_rate = 0.01
+
+averaging_window = 1000
 
 agent = reinforce_agent(batch_size=batch_size)
 
 # Start training the agent
-model = PolicyModel(input_dim=input_dim, n_hidden_layers=2, n_nodes_per_layer=5, learning_rate= learning_rate)
+model = PolicyModel(n_hidden_layers=2, n_nodes_per_layer=5, input_dim= input_dim, output_dim=n_actions, learning_rate= learning_rate)
 episode_reward_history = []
 for batch in range(n_episodes // batch_size):
     # Gather episodes
     
-    episodes = agent.gather_episodes(state_bounds, n_actions, model, batch_size, env_name)
+    episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name)
 
     # Group states, actions and returns in numpy arrays
     states = np.concatenate([ep['states'] for ep in episodes])
@@ -37,7 +39,7 @@ for batch in range(n_episodes // batch_size):
     for ep_rwds in rewards:
         episode_reward_history.append(np.sum(ep_rwds))
 
-    avg_rewards = np.mean(episode_reward_history[-10:])
+    avg_rewards = np.mean(episode_reward_history[-averaging_window:])
 
     print('Finished episode', (batch + 1) * batch_size,
           'Average rewards: ', avg_rewards)

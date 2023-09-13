@@ -3,14 +3,15 @@ from PQC import generate_model_policy, reinforce_update
 import tensorflow as tf
 import numpy as np
 
-env_name = "CartPole-v1"
-n_episodes = 10000
-batch_size=10
-n_actions = 2
+env_name = "foxinahole"
+n_episodes = 5000
+batch_size=100
+n_actions = 5
 n_layers =5
-state_bounds = np.array([2.4, 2.5, 0.21, 2.5])
+state_bounds = 1
 gamma = 1
-input_dim = 4
+input_dim = 5
+averaging_window = 100
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -29,11 +30,11 @@ ws= [w_in, w_var, w_out]
 
 # Start training the agent
 episode_reward_history = []
-model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1, )
+model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
 for batch in range(n_episodes // batch_size):
     # Gather episodes
     
-    episodes = agent.gather_episodes(state_bounds, n_actions, model, batch_size, env_name)
+    episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name)
 
     # Group states, actions and returns in numpy arrays
     states = np.concatenate([ep['states'] for ep in episodes])
@@ -51,7 +52,7 @@ for batch in range(n_episodes // batch_size):
     for ep_rwds in rewards:
         episode_reward_history.append(np.sum(ep_rwds))
 
-    avg_rewards = np.mean(episode_reward_history[-10:])
+    avg_rewards = np.mean(episode_reward_history[-averaging_window:])
 
     print('Finished episode', (batch + 1) * batch_size,
           'Average rewards: ', avg_rewards)

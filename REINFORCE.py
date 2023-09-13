@@ -13,17 +13,24 @@ from collections import deque, defaultdict
 import matplotlib.pyplot as plt
 from cirq.contrib.svg import SVGCircuit
 
+from fox_in_a_hole_gym import FoxInAHole
+
 class reinforce_agent():
   def __init__(self, batch_size):
     self.batch_size=batch_size
     self.brain = None
     pass
 
-  def gather_episodes(self,state_bounds, n_actions, model, batch_size, env_name):
+  def gather_episodes(self,state_bounds, input_dim, n_actions, model, batch_size, env_name):
       """Interact with environment in batched fashion."""
 
       trajectories = [defaultdict(list) for _ in range(batch_size)]
-      envs = [gym.make(env_name) for _ in range(batch_size)]
+      if env_name.lower() != "foxinahole":
+         
+        envs = [gym.make(env_name) for _ in range(batch_size)]
+      
+      else:
+         envs = [FoxInAHole(n_holes=input_dim) for _ in range(batch_size)]
 
       done = [False for _ in range(batch_size)]
       states = [e.reset()for e in envs]

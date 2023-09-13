@@ -27,17 +27,18 @@ Week 2 Planning:
 
 Week 3 Planning:
 - Create encoding scheme/ way to encorperate previous actions and states into decision (RNN, something else.)
-- get RL working of CFIAH
+- get RL working on CFIAH
 - Get QRL working on CFIAH
-
+- Write first draft thesis explaining the CFIAH
 
 Week 4 Planning:
 - run QRL vs RL on CFIAH with N reps for stat. results
 - put data, results, observations in kladversie thesis
-- discuss results with evert
+- discuss results with evert?
+- extend FIAH env with code for the quantum version already in the source code
 
 Week 5 Planning
-- Perform the same comparison but then on the already implemented quantum version in the fox in a hole code
+- Perform the same comparison but then on quantum version in the fox in a hole code
 - write out the comparison
 - finish next quantum version of the game
 - write out comparison

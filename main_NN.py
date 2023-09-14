@@ -10,6 +10,7 @@ import datetime
 plotting = False
 print_avg = False
 save_data = True
+print_model_summary = True
 
 env_name = "FoxInAHole"
 n_episodes = 100000
@@ -71,7 +72,7 @@ for _ in range(n_reps):
         if not os.path.isdir(directory):
             os.mkdir(directory)
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"./results/" + '-'+'NN'+f'{n_holes}holes'+'layers'+f'{n_hidden_layers}'+'nodes'+f'{n_nodes_per_layer}'+'lr'+f'{learning_rate}/'
+        directory = f"./results/" + '-'+'NN'+f'{n_holes}holes'+'layers'+f'{n_hidden_layers}'+'nodes'+f'{n_nodes_per_layer}'+'lr'+f'{learning_rate}'+f'neps{n_episodes}/'
             
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -86,3 +87,6 @@ for _ in range(n_reps):
 
 
         np.save(directory, episode_reward_history)
+
+if print_model_summary:
+    model.model.summary()

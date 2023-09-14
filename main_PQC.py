@@ -11,6 +11,7 @@ import os
 plotting = False
 print_avg = False
 save_data = True
+print_model_summary = True
 
 env_name = "FoxInAHole"
 n_episodes = 100000
@@ -27,7 +28,7 @@ lr_in= 0.1
 lr_var= 0.01
 lr_out=0.1
 
-n_reps = 5
+n_reps = 3
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -96,3 +97,6 @@ for _ in range(n_reps):
 
 
         np.save(directory, episode_reward_history)
+
+if print_model_summary:
+    model.summary()

@@ -67,3 +67,5 @@ class FoxInAHole(gym.Env):
 
 
         return self.state, reward, done, {}
+    
+    

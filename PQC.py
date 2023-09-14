@@ -131,7 +131,7 @@ def generate_model_policy(n_qubits, n_layers, n_actions, beta):
 
     return model
 
-@tf.function
+# @tf.function
 def reinforce_update(states, actions, returns, model, ws, optimizers, batch_size):
     states = tf.convert_to_tensor(states)
     actions = tf.convert_to_tensor(actions)

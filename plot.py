@@ -47,7 +47,7 @@ def plot_from_path(path_folders, labels, smoothing):
 
         all_data = np.zeros((n_files,
                              0)).tolist()  # [[] for n in range(n_files)] # creates a list of empty lists for the amount of different data files available
-        min_length = 100000  # min length was to keep track of issues
+        min_length = 10000000  # min length was to keep track of issues
 
         for i, path in enumerate(os.listdir(path_folder)):
             dir = os.path.join(path_folder, path)
@@ -81,7 +81,7 @@ def plot_from_path(path_folders, labels, smoothing):
 
         if n_files > 1:
             all_data_std = np.std(all_data, axis=0)
-            plt.fill_between(X, all_data_average - all_data_std, all_data_average + all_data_std, alpha=0.1)
+            plt.fill_between(X, all_data_average - all_data_std, all_data_average + all_data_std, alpha=0.2)
 
         plt.xlabel("Episode")
         plt.ylabel("Average episode reward/length")
@@ -138,20 +138,19 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 # adjust to own paths
 
-# # FOR ACTIVATION FUNCTION TUNING
+
 # paths = [
-#     "results/b200000-bs20-l0.0001-aac-e0-afReLu-bTrue-bTrue-r7-c7-s1.0-opixel-d50/rewards",
-#     "results/b200000-bs20-l0.0001-aac-e0-afReLu-bTrue-bTrue-r7-c7-s1.0-opixel-d200/rewards",
-#     "results/b200000-bs20-l0.0001-aac-e0.0-afReLu-bTrue-bTrue-r7-c7-s1.0-opixel/rewards",
+#     # # "results/-NN5holeslayers2nodes20lr0.005/",
+#     # "results/-NN10holeslayers2nodes20lr0.005/"
+#     "data1/bosman/resultsQRL/-NN5holeslayers5nodeslrin0.1lrlrvar0.01lrout0.1/"
 # ]
-
 # labels = [
-#     "depth 5",
-#     "eta 50",
-#     "eta 200",
+#     # "NN 5 holes",
+#     # "NN 10 holes"
+#     "PQC"
 # ]
 
 
-# plot_percentage(paths, labels, 5000)
+# plot_from_path(paths, labels, 5000)
 # plt.legend()
-# plt.show()
+# # plt.show()

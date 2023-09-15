@@ -11,43 +11,43 @@ import os
 plotting = False
 print_avg = False
 save_data = True
-print_model_summary = True
+print_model_summary = False
 
 env_name = "FoxInAHole"
 n_episodes = 100000
 n_holes = 5
 n_layers = 5
-batch_size=1000
+batch_size=100
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
-input_dim = 2*n_holes -2
+input_dim = 2*(n_holes -2)
 averaging_window = 5000
 
 lr_in= 0.1
 lr_var= 0.01
 lr_out=0.1
 
-n_reps = 3
+n_reps = 5
 
 agent = reinforce_agent(batch_size=batch_size)
-
-# As the different sets of parameters require different learning rates, create seperate optimizers
-optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
-optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
-optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
-
-# Assign the model parameters to each optimizer
-w_in, w_var, w_out = 1, 0, 2
-
-optimizers = [optimizer_in, optimizer_var, optimizer_out]
-ws= [w_in, w_var, w_out]
 
 
 
 # Start training the agent
 for _ in range(n_reps):
     episode_reward_history = []
+    # As the different sets of parameters require different learning rates, create seperate optimizers
+    optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
+    optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
+    optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
+
+    # Assign the model parameters to each optimizer
+    w_in, w_var, w_out = 1, 0, 2
+
+    optimizers = [optimizer_in, optimizer_var, optimizer_out]
+    ws= [w_in, w_var, w_out]
+
     model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
@@ -82,7 +82,7 @@ for _ in range(n_reps):
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"/data1/bosman/resultsQRL/PQC/"+f'{n_holes}holes'+'layers'+f'{n_layers}'+'nodes'+f'lrin{lr_in}'+'lr'+f'lrvar{lr_var}'+f'lrout{lr_out}'+f'n_eps{n_episodes}/'
+        directory = f"/data1/bosman/resultsQRL/PQC/"+f'{n_holes}holes'+f'{n_layers}layers'+f'lrin{lr_in}'+'lr'+f'lrvar{lr_var}'+f'lrout{lr_out}'+f'n_eps{n_episodes}'+f'bsize{batch_size}/'
             
         if not os.path.isdir(directory):
             os.mkdir(directory)

@@ -10,20 +10,20 @@ import datetime
 plotting = False
 print_avg = False
 save_data = True
-print_model_summary = True
+print_model_summary = False
 
 env_name = "FoxInAHole"
 n_episodes = 100000
-n_holes = 10
-batch_size=1000
+n_holes = 5
+batch_size=100
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
-input_dim = 2*n_holes -2
+input_dim = 2*(n_holes -2)
 learning_rate = 0.005
 averaging_window = 5000
 n_hidden_layers=2
-n_nodes_per_layer=20
+n_nodes_per_layer=10
 
 n_reps = 5
 
@@ -65,15 +65,10 @@ for _ in range(n_reps):
         plot(episode_reward_history, "NN", averaging_window)
 
     if save_data:
-        parent_directory = os.getcwd()
-        print("parent directory is " + parent_directory)
-        directory = "./results/"
-        # check if results directory exists, if not, create it
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
+
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"./results/" + '-'+'NN'+f'{n_holes}holes'+'layers'+f'{n_hidden_layers}'+'nodes'+f'{n_nodes_per_layer}'+'lr'+f'{learning_rate}'+f'neps{n_episodes}/'
-            
+        directory = f"/data1/bosman/resultsQRL/NN/"+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
+
         if not os.path.isdir(directory):
             os.mkdir(directory)
 

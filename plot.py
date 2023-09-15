@@ -138,21 +138,23 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 # adjust to own paths
 
+if __name__ == '__main__':
+    paths = [
+        "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100/",
+        "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100initreward/",
+        "/data1/bosman/resultsQRL/PQC/5holes5layerslrin0.1lrlrvar0.01lrout0.1n_eps100000bsize100/"
+    ]
+    labels = [
+        # "NN 5 holes",
+        # "NN 10 holes"
+        # "PQC",
+        # "NN"
+        "NN",
+        "NN init reward",
+        "PQC"
+    ]
 
-paths = [
-    # # "results/-NN5holeslayers2nodes20lr0.005/",
-    # "results/-NN10holeslayers2nodes20lr0.005/"
-    "/data1/bosman/resultsQRL/PQC/5holeslayers5nodeslrin0.1lrlrvar0.01lrout0.1n_eps100000/",
-    "/data1/bosman/resultsQRL/NN/5holeslayers2nodes20lr0.005"
-]
-labels = [
-    # "NN 5 holes",
-    # "NN 10 holes"
-    "PQC",
-    "NN"
-]
 
-
-plot_from_path(paths, labels, 5000)
-plt.legend()
-plt.show()
+    plot_from_path(paths, labels, 5000)
+    plt.legend()
+    plt.show()

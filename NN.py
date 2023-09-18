@@ -39,22 +39,7 @@ class PolicyModel():
             # loss = -1*tf.math.multiply(log_probs, returns)
 
         # print("states")
-        # print(states)
-        # print('actions')
-        # print(actions)
-        # print('returns')
-        # print(returns)
-        # print('logits')
-        # print(logits)
-        # print('p actions')
-        # print(p_actions)
-        # print('log probs')
-        # print(log_probs)
-        # print('loss')
-        # print(loss)
-
+        
         grads = tape.gradient(loss, self.model.trainable_variables)
 
-        # print('grads')
-        # print(grads)
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))

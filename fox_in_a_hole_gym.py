@@ -12,7 +12,8 @@ class FoxInAHole(gym.Env):
     def reset(self):
         # reset the environment to initial random state
         self.hole_nr = np.random.randint(low=0,high=self.n_holes, size= 1)
-        self.state = -1*np.ones(int(2*(self.n_holes-2)))
+        # self.state = -1*np.ones(int(2*(self.n_holes-2))) #2(n-2) encoding
+        self.state = -1*np.ones(int(self.n_holes)) 
         self.guess_counter = 0
         return self.state
     

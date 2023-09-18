@@ -27,10 +27,12 @@ Week 2 Planning:
 
 
 Week 3 Planning:
-- Create encoding scheme/ way to encorperate previous actions and states into decision (RNN, something else.)
-- get RL working on CFIAH
-- Get QRL working on CFIAH
-- Write first draft thesis explaining the CFIAH
+- Create encoding scheme/ way to encorperate previous actions and states into decision (RNN, something else.)  (DONE)
+- get RL working on CFIAH (DONE)
+- Get QRL working on CFIAH (DONE)
+- Write first draft thesis explaining the CFIAH (DONE)
+
+
 
 Week 4 Planning:
 - run QRL vs RL on CFIAH with N reps for stat. results

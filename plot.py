@@ -84,7 +84,7 @@ def plot_from_path(path_folders, labels, smoothing):
             plt.fill_between(X, all_data_average - all_data_std, all_data_average + all_data_std, alpha=0.2)
 
         plt.xlabel("Episode")
-        plt.ylabel("Average episode reward/length")
+        plt.ylabel("Average episode reward")
 
     pass
 
@@ -140,18 +140,23 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [
-        "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100/",
-        "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100initreward/",
-        "/data1/bosman/resultsQRL/PQC/5holes5layerslrin0.1lrlrvar0.01lrout0.1n_eps100000bsize100/"
+        # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100/",
+        # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100initreward/",
+        # "/data1/bosman/resultsQRL/PQC/5holes5layerslrin0.1lrlrvar0.01lrout0.1n_eps100000bsize100/"
+        "ProbabilityAgentUnbounded5holes/",
+        "BoundAgentUnbounded5holes/"
     ]
     labels = [
         # "NN 5 holes",
         # "NN 10 holes"
         # "PQC",
         # "NN"
-        "NN",
-        "NN init reward",
-        "PQC"
+        # "NN",
+        # "NN init reward",
+        # "PQC"
+        "Unbounded probability agent 5 holes",
+        "Unbounded bound agent 5 holes"
+
     ]
 
 

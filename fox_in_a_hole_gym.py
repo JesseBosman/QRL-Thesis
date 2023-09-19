@@ -12,8 +12,8 @@ class FoxInAHole(gym.Env):
     def reset(self):
         # reset the environment to initial random state
         self.hole_nr = np.random.randint(low=0,high=self.n_holes, size= 1)
-        # self.state = -1*np.ones(int(2*(self.n_holes-2))) #2(n-2) encoding
-        self.state = -1*np.ones(int(self.n_holes)) 
+        self.state = -1*np.ones(int(2*(self.n_holes-2))) #2(n-2) encoding
+        # self.state = -1*np.ones(int(self.n_holes)) 
         self.guess_counter = 0
         return self.state
     
@@ -54,7 +54,7 @@ class FoxInAHole(gym.Env):
             done = True
         
         elif self.guess_counter == 2*self.n_holes-5:
-            reward = -self.n_holes
+            reward = -1
             self.state[self.guess_counter]=action
             done = True
         else:
@@ -69,4 +69,17 @@ class FoxInAHole(gym.Env):
 
         return self.state, reward, done, {}
     
+    def unbounded_step(self, action):
+        if action == self.hole_nr:
+            reward = 1
+            done = True
+        
+        else:
+            reward = -1
+            done = False
+            self.move_fox()
+        
+        return self.state, reward, done, {}
+            
+
     

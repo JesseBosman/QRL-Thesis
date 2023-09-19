@@ -14,6 +14,7 @@ save_data = True
 print_model_summary = False
 
 env_name = "FoxInAHole"
+exp_key = "2(n-2)-inp-enc"
 n_episodes = 100000
 n_holes = 5
 n_layers = 5
@@ -82,7 +83,7 @@ for _ in range(n_reps):
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"/data1/bosman/resultsQRL/PQC/"+f'{n_holes}holes'+f'{n_layers}layers'+f'lrin{lr_in}'+'lr'+f'lrvar{lr_var}'+f'lrout{lr_out}'+f'n_eps{n_episodes}'+f'bsize{batch_size}/'
+        directory = f"/home/s2025396/data1/ResultsQRL/PQC/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'lrin{lr_in}'+'lr'+f'lrvar{lr_var}'+f'lrout{lr_out}'+f'n_eps{n_episodes}'+f'bsize{batch_size}/'
             
         if not os.path.isdir(directory):
             os.mkdir(directory)

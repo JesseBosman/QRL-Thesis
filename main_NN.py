@@ -5,15 +5,17 @@ from plot import plot
 from tqdm import tqdm
 import os
 import datetime
+import tensorflow as tf
 
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = True
+save_data = False
 print_model_summary = False
+print_policy = True
 
 env_name = "FoxInAHole"
-exp_key = "n-inp-enc"
+exp_key = "2(n-2)-inp-enc"
 n_episodes = 100000
 n_holes = 5
 batch_size=100
@@ -26,7 +28,7 @@ averaging_window = 5000
 n_hidden_layers=2
 n_nodes_per_layer=10
 
-n_reps = 5
+n_reps = 1
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -68,8 +70,10 @@ for _ in range(n_reps):
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
-
+        # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
+        
+        
+        directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
@@ -83,6 +87,17 @@ for _ in range(n_reps):
 
 
         np.save(directory, episode_reward_history)
+
+if print_policy:
+    state = tf.convert_to_tensor([-1*np.ones(input_dim)])
+    print(state)
+    for step in range(input_dim):
+        print(np.shape(model(state)))
+        action = np.argmax(model(state)[0])
+        state[0][step] = action
+    
+    print("Final policy is the following sequence: {}".format(state))
+
 
 if print_model_summary:
     model.model.summary()

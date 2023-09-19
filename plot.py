@@ -143,8 +143,7 @@ if __name__ == '__main__':
         # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100/",
         # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100initreward/",
         # "/data1/bosman/resultsQRL/PQC/5holes5layerslrin0.1lrlrvar0.01lrout0.1n_eps100000bsize100/"
-        "ProbabilityAgentUnbounded5holes/",
-        "BoundAgentUnbounded5holes/"
+        "/home/s2025396/data1/ResultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.005neps100000bsize100/"
     ]
     labels = [
         # "NN 5 holes",
@@ -154,8 +153,7 @@ if __name__ == '__main__':
         # "NN",
         # "NN init reward",
         # "PQC"
-        "Unbounded probability agent 5 holes",
-        "Unbounded bound agent 5 holes"
+        "NN agent 5 holes"
 
     ]
 

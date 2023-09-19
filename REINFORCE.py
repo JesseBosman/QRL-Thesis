@@ -33,7 +33,7 @@ class reinforce_agent():
          envs = [FoxInAHole(n_holes=(input_dim/2+2)) for _ in range(batch_size)]
 
       done = [False for _ in range(batch_size)]
-      states = [e.reset()for e in envs]
+      states = [e.reset() for e in envs]
 
       while not all(done):
           unfinished_ids = [i for i in range(batch_size) if not done[i]]

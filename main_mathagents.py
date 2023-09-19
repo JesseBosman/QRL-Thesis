@@ -8,16 +8,15 @@ from mathematical_agents import ProbabilityAgent, BoundAgent
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = False
-plot_probabilities = True
+save_data = True
+plot_probabilities = False
 
 from fox_in_a_hole_gym import FoxInAHole
 
 
-exp_key = "ProbabilityAgent"
-n_episodes = 10000
+exp_key = "BoundAgentUnbounded"
+n_episodes = 100000
 n_holes = 5
-batch_size=100
 n_actions = n_holes
 n_reps = 5
 
@@ -56,9 +55,17 @@ else:
             while not done:
 
                 action = agent.pick_hole()
-                state, reward, done, _ = env.unbounded_step(action)
+                if exp_key == "ProbabilityAgentUnbounded" or exp_key == "BoundAgentUnbounded":
+                    state, reward, done, _ = env.unbounded_step(action)
+                
+                else:
+                    state, reward, done, _ = env.step(action)
                 ep_rwds.append(reward)
-                agent.update_probabilities()
+
+                try:
+                    agent.update_probabilities()
+                except:
+                    pass
             
             episode_reward_history.append(np.sum(ep_rwds))
             agent.reset()

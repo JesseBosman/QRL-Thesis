@@ -55,11 +55,6 @@ class reinforce_agent():
               trajectories[i]['actions'].append(action)
               trajectories[i]['rewards'].append(reward)
 
-      # print('action_probs')
-      # print(action_probs)
-      # print('trajectories')
-      # print(trajectories)
-      
       return trajectories
 
   def compute_returns(self, rewards_history, gamma):

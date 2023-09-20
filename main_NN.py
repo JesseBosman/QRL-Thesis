@@ -10,33 +10,37 @@ import tensorflow as tf
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = False
+save_data = True
 print_model_summary = False
 print_policy = True
 
 env_name = "FoxInAHole"
-exp_key = "2(n-2)-inp-enc"
-n_episodes = 100000
+exp_key = "2(n-2)-inp-enc-entropyregv2"
+n_episodes = 50000
 n_holes = 5
 batch_size=100
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = 2*(n_holes -2)
-learning_rate = 0.005
+learning_rate = 0.01
 averaging_window = 5000
 n_hidden_layers=2
 n_nodes_per_layer=10
+activation = 'elu'
+anil= 0.75
+start = 1
 
-n_reps = 1
+n_reps = 10
 
 agent = reinforce_agent(batch_size=batch_size)
 
 # Start training the agent
 
 for _ in range(n_reps):
-    model = PolicyModel(n_hidden_layers= n_hidden_layers, n_nodes_per_layer=n_nodes_per_layer, input_dim= input_dim, output_dim=n_actions, learning_rate= learning_rate)
+    model = PolicyModel(activation_function=activation, n_hidden_layers= n_hidden_layers, n_nodes_per_layer=n_nodes_per_layer, input_dim= input_dim, output_dim=n_actions, learning_rate= learning_rate)
     episode_reward_history = []
+    
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
@@ -52,8 +56,8 @@ for _ in range(n_reps):
         id_action_pairs = np.array([[i, a] for i, a in enumerate(actions)])
 
         # Update model parameters.
-        model.update_reinforce(states, id_action_pairs, returns, batch_size=batch_size)
-
+        eta = max(start*(1-(batch*batch_size)/(n_episodes*anil)), 0)
+        model.update_reinforce(states, id_action_pairs, returns, batch_size=batch_size, eta = eta)
         # Store collected rewards
         for ep_rwds in rewards:
             episode_reward_history.append(np.sum(ep_rwds))
@@ -73,7 +77,7 @@ for _ in range(n_reps):
         # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         
         
-        directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
+        directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
         if not os.path.isdir(directory):
             os.mkdir(directory)
 
@@ -88,15 +92,17 @@ for _ in range(n_reps):
 
         np.save(directory, episode_reward_history)
 
-if print_policy:
-    state = tf.convert_to_tensor([-1*np.ones(input_dim)])
-    print(state)
-    for step in range(input_dim):
-        print(np.shape(model(state)))
-        action = np.argmax(model(state)[0])
-        state[0][step] = action
-    
-    print("Final policy is the following sequence: {}".format(state))
+    if print_policy:
+        state = tf.convert_to_tensor([-1*np.ones(input_dim)])
+
+        for step in range(input_dim):
+            action = np.argmax(model(state)[0])
+
+            ar_state = state.numpy()
+            ar_state[0][step] = action
+            state = tf.convert_to_tensor(ar_state)
+
+        print("Final policy is the following sequence: {}".format(state))
 
 
 if print_model_summary:

@@ -10,7 +10,10 @@ class ProbabilityAgent():
         self.longest_policy_sequence = []
     
     def pick_hole(self):
-        action = np.argmax(self.current_probabilities)
+        if self.current_policy_sequence == []:
+            action = 1
+        else:
+            action = np.argmax(self.current_probabilities)
         self.action = action
         self.current_policy_sequence.append(action)
         if self.print_holeprob:

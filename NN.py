@@ -24,7 +24,7 @@ class PolicyModel():
     def __call__(self, input):
         return self.model(input)
 
-    def update_reinforce(self, states, actions, returns, batch_size):
+    def update_reinforce(self, states, actions, returns, batch_size, eta):
         states = tf.convert_to_tensor(states)
         actions = tf.convert_to_tensor(actions)
         returns = tf.convert_to_tensor(returns)
@@ -33,10 +33,11 @@ class PolicyModel():
         with tf.GradientTape() as tape:
             tape.watch(self.model.trainable_variables)
             logits = self.model(states)
+            entropy_loss = -1*tf.math.reduce_sum(tf.math.multiply(logits, tf.math.log(logits)), axis=1)
             p_actions = tf.gather_nd(logits, actions)
             log_probs = tf.math.log(p_actions)
-            loss = tf.math.reduce_sum(-log_probs * returns) / batch_size
-            # loss = -1*tf.math.multiply(log_probs, returns)
+            loss = (tf.math.reduce_sum(-log_probs * returns) - eta* entropy_loss)/ batch_size
+
 
         # print("states")
         

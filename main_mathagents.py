@@ -14,7 +14,7 @@ plot_probabilities = False
 from fox_in_a_hole_gym import FoxInAHole
 
 
-exp_key = "BoundAgentUnbounded"
+exp_key = "ProbabilityAgentUnbounded"
 n_episodes = 100000
 n_holes = 5
 n_actions = n_holes

@@ -140,48 +140,61 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [
-        # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100/",
-        # "/data1/bosman/resultsQRL/NN/5holes2layers10nodeslr0.005neps100000bsize100initreward/",
-        # "/data1/bosman/resultsQRL/PQC/5holes5layerslrin0.1lrlrvar0.01lrout0.1n_eps100000bsize100/"
-        # "/home/s2025396/data1/ResultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.005neps100000bsize100/"
+        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.001neps100000bsize100/",
+        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.005neps100000bsize100/",
+        # 
+
+
+
+
+
+        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.01neps100000bsize100elu/",
+        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.01neps100000bsize100/"
+
 
         # ## For the baselines
-        # ## 5 holes 
-        # "BoundAgent5holes/",
-        # "BoundAgentUnbounded5holes/",
-        # "ProbabilityAgent5holes/",
-        # "ProbabilityAgentUnbounded5holes/"
+        ## 5 holes 
 
-        ## 10 holes 
-        "BoundAgent10holes/",
-        "BoundAgentUnbounded10holes/",
-        "ProbabilityAgent10holes/",
-        "ProbabilityAgentUnbounded10holes/"
+        # "ProbabilityAgent10holes/"
+
+
+        # ## 10 holes 
+        # "BoundAgent10holes/",
+        # "BoundAgentUnbounded10holes/",
+        # "ProbabilityAgent10holes/",
+        # "ProbabilityAgentUnbounded10holes/"
+
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start10anil0.75elu/",
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start10anil0.5elu/",
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start10anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start1anil0.75elu/",
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start1anil0.5elu/",
+        "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc-entropyreg5holes2layers10nodeslr0.01neps50000bsize100gamma1start1anil0.25elu/"
+
     ]
     labels = [
-        # "NN 5 holes",
-        # "NN 10 holes"
-        # "PQC",
-        # "NN"
-        # "NN",
-        # "NN init reward",
-        # "PQC"
-        # "NN agent 5 holes"
+            "eta [10,0,0.75]",
+            "eta [10,0,0.5]",
+            "eta [10,0,0.25]",
+            "eta [1,0,0.75]",
+            "eta [1,0,0.5]",
+            "eta [1,0,0.25]"
 
         # ## For the baselines
-        # ## 5 holes
-        # "Bound agent 5 holes",
-        # "Bound agent unbounded 5 holes",
-        # "Probability agent 5 holes",
-        # "Probability agent unbounded 5 holes "
+        # ## 10 holes
+        # "Bound agent 10 holes",
+        # "Bound agent unbounded 10 holes",
+        # "Probability agent 10 holes",
+        # "Probability agent unbounded 10 holes "
+        # "1 hidden layer",
+        # "2 hidden layers",
+        # "3 hidden layers",
+        # "4 hidden layers"
 
-        ## For the baselines
-        ## 10 holes
-        "Bound agent 10 holes",
-        "Bound agent unbounded 10 holes",
-        "Probability agent 10 holes",
-        "Probability agent unbounded 10 holes "
-
+        # "1 hidden layer",
+        # "2 hidden layers",
+        # "3 hidden layers",
+        # "4 hidden layers"
 
     ]
 

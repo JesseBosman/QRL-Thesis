@@ -29,7 +29,7 @@ n_hidden_layers=2
 n_nodes_per_layer=10
 activation = 'elu'
 anil= 0.75
-start = 1
+strt = 1
 
 n_reps = 10
 
@@ -76,8 +76,10 @@ for _ in range(n_reps):
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
         # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         
-        
-        directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+        ## WORKSTATION
+        #directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+        ## ALICE
+        directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{strt}"+f"anil{anil}"+f"{activation}/"
         if not os.path.isdir(directory):
             os.mkdir(directory)
 

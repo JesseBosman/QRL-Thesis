@@ -12,24 +12,31 @@ plotting = False
 print_avg = False
 save_data = True
 print_model_summary = False
+print_policy = True
+
+save_length = True
+save_reward = True
 
 env_name = "FoxInAHole"
-exp_key = "2(n-2)-inp-enc"
+exp_key = "2(n-2)-inp-enc-rewardfound1"
 n_episodes = 100000
 n_holes = 5
 n_layers = 5
-batch_size=100
+batch_size = 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = 2*(n_holes -2)
 averaging_window = 5000
 
+anil= 0.25
+start = 1
+
 lr_in= 0.1
-lr_var= 0.01
+lr_var= 0.0001
 lr_out=0.1
 
-n_reps = 5
+n_reps = 10
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -38,6 +45,7 @@ agent = reinforce_agent(batch_size=batch_size)
 # Start training the agent
 for _ in range(n_reps):
     episode_reward_history = []
+    episode_length_history = []
     # As the different sets of parameters require different learning rates, create seperate optimizers
     optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
     optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
@@ -62,14 +70,17 @@ for _ in range(n_reps):
         returns = np.concatenate([agent.compute_returns(ep_rwds, gamma) for ep_rwds in rewards])
 
         returns = np.array(returns, dtype=np.float32)
+
+        eta = max(start*(1-(batch*batch_size)/(n_episodes*anil)), 0)
         id_action_pairs = np.array([[i, a] for i, a in enumerate(actions)])
 
         # Update model parameters.
-        reinforce_update(states, id_action_pairs, returns, model, ws, optimizers, batch_size=batch_size )
+        reinforce_update(states, id_action_pairs, returns, model, ws, optimizers, batch_size=batch_size, eta= eta)
 
         # Store collected rewards
         for ep_rwds in rewards:
             episode_reward_history.append(np.sum(ep_rwds))
+            episode_length_history.append(len(ep_rwds))
 
         
         if print_avg:
@@ -80,24 +91,56 @@ for _ in range(n_reps):
     if plotting:
         plot(episode_reward_history, "NN", averaging_window)
 
+    if print_policy:
+        state = tf.convert_to_tensor([-1*np.ones(input_dim)])
+
+        for step in range(input_dim):
+            action = np.random.choice(n_holes, p = model(state).numpy()[0])
+            ar_state = state.numpy()
+            ar_state[0][step] = action
+            state = tf.convert_to_tensor(ar_state)
+
+        print("Final policy is the following sequence: {}".format(state))
+
     if save_data:
 
-        # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f"/home/s2025396/data1/ResultsQRL/PQC/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'lrin{lr_in}'+'lr'+f'lrvar{lr_var}'+f'lrout{lr_out}'+f'n_eps{n_episodes}'+f'bsize{batch_size}/'
-            
-        if not os.path.isdir(directory):
-            os.mkdir(directory)
+        if save_length:
 
-        print(f"Storing results in {directory}")
+            # the path to where we save the results. we take the first letter of every _ argument block to determine this path
+            directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+                
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
 
-        # add date and time to filename to create seperate files with the same setting.
-        dt = str(datetime.datetime.now()).split()
-        time = f";".join(dt[1].split(":"))
+            print(f"Storing results in {directory}")
 
-        directory += f"-".join((dt[0], time)) + ".npy"
+            # add date and time to filename to create seperate files with the same setting.
+            dt = str(datetime.datetime.now()).split()
+            time = f";".join(dt[1].split(":"))
+
+            directory += f"-".join((dt[0], time)) + ".npy"
 
 
-        np.save(directory, episode_reward_history)
+            np.save(directory, episode_length_history)
+
+        if save_reward:
+
+            # the path to where we save the results. we take the first letter of every _ argument block to determine this path
+            directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+                
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
+
+            print(f"Storing results in {directory}")
+
+            # add date and time to filename to create seperate files with the same setting.
+            dt = str(datetime.datetime.now()).split()
+            time = f";".join(dt[1].split(":"))
+
+            directory += f"-".join((dt[0], time)) + ".npy"
+
+
+            np.save(directory, episode_reward_history)
 
 if print_model_summary:
     model.summary()

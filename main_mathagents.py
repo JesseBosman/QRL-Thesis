@@ -3,7 +3,7 @@ from plot import plot
 from tqdm import tqdm
 import os
 import datetime
-from mathematical_agents import ProbabilityAgent, BoundAgent
+from mathematical_agents import ProbabilityAgent, BoundAgent, PickMiddle
 
 # settings for writing the files, plotting
 plotting = False
@@ -14,11 +14,11 @@ plot_probabilities = False
 from fox_in_a_hole_gym import FoxInAHole
 
 
-exp_key = "ProbabilityAgentUnbounded"
-n_episodes = 100000
-n_holes = 5
+exp_key = "ProbabilityAgent"
+n_episodes = 1000000
+n_holes = 10
 n_actions = n_holes
-n_reps = 5
+n_reps = 10
 
 averaging_window = 5000
 if exp_key == "ProbabilityAgent":
@@ -32,6 +32,9 @@ elif exp_key =="BoundAgent":
 
 elif exp_key =="BoundAgentUnbounded":
     agent = BoundAgent(n_holes=n_holes)
+
+elif exp_key=="PickMiddle":
+    agent = PickMiddle(n_holes=n_holes)
 
 
 else:
@@ -47,6 +50,7 @@ else:
     env = FoxInAHole(n_holes=n_holes)
     for rep in range(n_reps):
         episode_reward_history = []
+        episode_length_history = []
         env.reset()
         for _ in tqdm(range(n_episodes)):
             done = False
@@ -68,6 +72,7 @@ else:
                     pass
             
             episode_reward_history.append(np.sum(ep_rwds))
+            episode_length_history.append(len(ep_rwds))
             agent.reset()
 
 
@@ -79,7 +84,7 @@ else:
         if save_data:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            directory = f'./{exp_key}{n_holes}holes/'
+            directory = f'./rewards{exp_key}{n_holes}holes{n_episodes}neps/'
 
             if not os.path.isdir(directory):
                 os.mkdir(directory)
@@ -94,4 +99,26 @@ else:
 
 
             np.save(directory, episode_reward_history)
+        
+        if save_data:
+
+            # the path to where we save the results. we take the first letter of every _ argument block to determine this path
+            directory = f'./lengths{exp_key}{n_holes}holes{n_episodes}neps/'
+
+            if not os.path.isdir(directory):
+                os.mkdir(directory)
+
+            print(f"Storing results in {directory}")
+
+            # add date and time to filename to create seperate files with the same setting.
+            dt = str(datetime.datetime.now()).split()
+            time = f";".join(dt[1].split(":"))
+
+            directory += f"-".join((dt[0], time)) + ".npy"
+
+
+            np.save(directory, episode_length_history)
+
+
+            
 

@@ -132,7 +132,7 @@ def generate_model_policy(n_qubits, n_layers, n_actions, beta):
     return model
 
 # @tf.function
-def reinforce_update(states, actions, returns, model, ws, optimizers, batch_size):
+def reinforce_update(states, actions, returns, model, ws, optimizers, batch_size, eta):
     states = tf.convert_to_tensor(states)
     actions = tf.convert_to_tensor(actions)
     returns = tf.convert_to_tensor(returns)
@@ -140,9 +140,11 @@ def reinforce_update(states, actions, returns, model, ws, optimizers, batch_size
     with tf.GradientTape() as tape:
         tape.watch(model.trainable_variables)
         logits = model(states)
+        entropy_loss = -1*tf.math.reduce_sum(tf.math.multiply(logits, tf.math.log(logits)), axis=1)
         p_actions = tf.gather_nd(logits, actions)
         log_probs = tf.math.log(p_actions)
-        loss = tf.math.reduce_sum(-log_probs * returns) / batch_size
+        loss = (tf.math.reduce_sum(-log_probs * returns) - eta* entropy_loss)/ batch_size
+        
     grads = tape.gradient(loss, model.trainable_variables)
     for optimizer, w in zip(optimizers, ws):
         optimizer.apply_gradients([(grads[w], model.trainable_variables[w])])

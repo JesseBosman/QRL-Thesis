@@ -73,3 +73,23 @@ class BoundAgent():
         pass
 
 
+class PickMiddle():
+    def __init__(self, n_holes):
+        self.current_policy_sequence = []
+        self.longest_policy_sequence = []
+        self.n_holes = n_holes
+
+    def pick_hole(self):
+        return self.n_holes//2
+
+    def update_probabilities(self):
+        pass
+
+    def reset(self):
+        if len(self.current_policy_sequence) > len(self.longest_policy_sequence):
+            self.longest_policy_sequence = self.current_policy_sequence
+        
+        self.current_policy_sequence = []
+        pass
+
+

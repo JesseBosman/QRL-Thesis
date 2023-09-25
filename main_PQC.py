@@ -11,17 +11,17 @@ import os
 plotting = False
 print_avg = False
 save_data = True
-print_model_summary = False
-print_policy = True
+print_model_summary = True
+print_policy = False
 
 save_length = True
 save_reward = True
 
 env_name = "FoxInAHole"
 exp_key = "2(n-2)-inp-enc-rewardfound1"
-n_episodes = 100000
+n_episodes = 500000
 n_holes = 5
-n_layers = 5
+n_layers = 10
 batch_size = 10
 n_actions = n_holes
 state_bounds = 1
@@ -32,9 +32,9 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-lr_in= 0.1
+lr_in= 0.01
 lr_var= 0.0001
-lr_out=0.1
+lr_out=0.01
 
 n_reps = 10
 

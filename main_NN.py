@@ -12,22 +12,23 @@ from sklearn.utils import shuffle
 plotting = False
 print_avg = False
 save_data = True
-print_model_summary = False
+print_model_summary = True
 print_policy = True
 
-env_name = "FoxInAHole"
-exp_key = "2(n-2)-inp-enc-rewardfound1"
-n_episodes = 1000000
-n_holes = 10
-batch_size=20
+env_name = "FoxInAHolev2"
+len_state = 1
+exp_key = f"{len_state}-inp-enc-rewardfound1"
+n_episodes = 500000
+n_holes = 5
+batch_size= 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
-input_dim = 2*(n_holes -2)
-learning_rate = 0.0001
+input_dim = len_state
+learning_rate = 0.001
 averaging_window = 5000
 n_hidden_layers=3
-n_nodes_per_layer=100
+n_nodes_per_layer=10
 activation = 'elu'
 anil= 0.25
 start = 1
@@ -49,7 +50,7 @@ for _ in range(n_reps):
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
-        episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name)
+        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state=len_state)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])

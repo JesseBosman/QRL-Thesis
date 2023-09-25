@@ -15,8 +15,8 @@ from fox_in_a_hole_gym import FoxInAHole
 
 
 exp_key = "ProbabilityAgent"
-n_episodes = 1000000
-n_holes = 10
+n_episodes = 500000
+n_holes = 5
 n_actions = n_holes
 n_reps = 10
 

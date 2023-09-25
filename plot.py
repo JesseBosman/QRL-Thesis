@@ -193,79 +193,25 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 # adjust to own paths
 
 if __name__ == '__main__':
-    paths = [
-        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.001neps100000bsize100/",
-        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.005neps100000bsize100/",
-        # 
+    paths = [   
+        "lengthsProbabilityAgent5holes500000neps/",
+        "/data1/bosman/resultsQRL/NN/ep_length/6-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/ep_length/5-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/ep_length/4-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/ep_length/3-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/ep_length/2-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        "/data1/bosman/resultsQRL/NN/ep_length/1-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/"
+        
 
-
-
-
-
-        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.01neps100000bsize100elu/",
-        # "/data1/bosman/resultsQRL/NN/2(n-2)-inp-enc5holes2layers10nodeslr0.01neps100000bsize100/"
-
-
-        # ## For the baselines
-        ## 5 holes 
-
-        # "ProbabilityAgent10holes/"
-
-
-        # ## 10 holes 
-        # "BoundAgent10holes/",
-        # "BoundAgentUnbounded10holes/",
-        # "ProbabilityAgent10holes/",
-        # "ProbabilityAgentUnbounded10holes/"
-
-        # "lengthsProbabilityAgent10holes1000000neps/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers50nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers75nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes4layers50nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes5layers50nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes6layers50nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize100gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers100nodeslr0.001neps1000000bsize100gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize20gamma1start1anil0.25elu/",
-        # "/data1/bosman/resultsQRL/NN/ep_length/2(n-2)-inp-enc-rewardfound110holes3layers100nodeslr0.001neps1000000bsize10gamma1start1anil0.25elu/"
-
-        # PQC
-        "lengthsProbabilityAgent5holes/",
-        "/data1/bosman/resultsQRL/PQC/ep_length/2(n-2)-inp-enc-rewardfound15holes8layersneps100000lrin0.1lrvar0.01lrout0.1bsize10gamma1start1anil0.25/"
     ]
     labels = [
-
-            # "probability agent 10 holes",
-            # "lr 0.0001 50 nodesn 3 hl",
-            # "lr 0.0001 75 nodes 3 hl ",
-            # "lr 0.0001 100 nodes 3 hl",
-            # "lr 0.0001 50 nodes 4 hl",
-            # "lr 0.0001 50 nodes 5 hl",
-            # "lr 0.0001 50 nodes 6 hl",
-            # "lr 0.0001 bs 100",
-            # "lr 0.001 bs 100",
-            # "lr 0.0001 bs 20",
-            # "lr 0.001 bs 10"
-
-
-        # ## For the baselines
-        # ## 10 holes
-        # "Bound agent 10 holes",
-        # "Bound agent unbounded 10 holes",
-        # "Probability agent 10 holes",
-        # "Probability agent unbounded 10 holes "
-        # "1 hidden layer",
-        # "2 hidden layers",
-        # "3 hidden layers",
-        # "4 hidden layers"
-
-        # "1 hidden layer",
-        # "2 hidden layers",
-        # "3 hidden layers",
-        # "4 hidden layers"
-        "Probability agent 5 holes",
-        "PQC 8 layers"
+        "probability agent",
+        "history size 6",
+        "history size 5",
+        "history size 4",
+        "history size 3",
+        "history size 2",
+        "history size 1"    
 
     ]
 

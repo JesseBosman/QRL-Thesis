@@ -12,7 +12,7 @@ plotting = False
 print_avg = False
 save_data = True
 print_model_summary = True
-print_policy = False
+print_policy = True
 
 save_length = True
 save_reward = True
@@ -20,8 +20,8 @@ save_reward = True
 env_name = "FoxInAHolev2"
 len_state = 2
 exp_key = f"{len_state}-inp-enc-rewardfound1"
-n_episodes = 500000
-n_holes = 5
+n_episodes = 250000
+n_holes = 10
 n_layers = 10
 batch_size = 10
 n_actions = n_holes
@@ -37,7 +37,7 @@ lr_in= 0.001
 lr_var= 0.0001
 lr_out=0.001
 
-n_reps = 5
+n_reps = 10
 
 agent = reinforce_agent(batch_size=batch_size)
 

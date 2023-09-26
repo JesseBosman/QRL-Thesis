@@ -88,7 +88,7 @@ def plot_reward_from_path(path_folders, labels, smoothing):
 
     pass
 
-def plot_length_from_path(path_folders, labels, smoothing):
+def plot_length_from_path(path_folders, labels, smoothing, neps):
     """
     This functions will plot the average episode reward over a ~ thousand budget step window. It takes as input a folder directory containing
     .npy files with the data. Averages will be taken across these files to create statistically meaningfull results.
@@ -106,7 +106,7 @@ def plot_length_from_path(path_folders, labels, smoothing):
         for i, path in enumerate(os.listdir(path_folder)):
             dir = os.path.join(path_folder, path)
             episode_lengths = np.load(
-                dir)  # now names episode_rewards, but depending on dir can also be episode_lengths
+                dir)[:neps]  # now names episode_rewards, but depending on dir can also be episode_lengths
             counter = 0
             n_episodes = 0
             smoothed_episode_lenghts = []
@@ -194,28 +194,22 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [   
-        "lengthsProbabilityAgent5holes500000neps/",
-        "/data1/bosman/resultsQRL/NN/ep_length/6-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/5-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/4-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/3-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/1-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/"
-        
+        # "C:/Users/thebo/Documents/Studie/Master/QRL-Thesis/QRL-Thesis/lengthsProbabilityAgent10holes1000000neps/",
+        # "C:/Users/thebo/Documents/Studie/Master/resultsQRL/NN/ep_length/2-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/"
 
+        "C:/Users/thebo/Documents/Studie/Master/QRL-Thesis/QRL-Thesis/lengthsProbabilityAgent5holes500000neps/",
+        "C:/Users/thebo/Documents/Studie/Master/resultsQRL/PQC/ep_length/2-inp-enc-rewardfound15holes10layersneps500000lrin0.001lrvar0.0001lrout0.001bsize10gamma1start1anil0.25/"
     ]
     labels = [
         "probability agent",
-        "history size 6",
-        "history size 5",
-        "history size 4",
-        "history size 3",
-        "history size 2",
-        "history size 1"    
+        "PQC 5 holes 2 inputs"
+        
+
+        # "pqc 5 holes 2 input"
 
     ]
 
 
-    plot_length_from_path(paths, labels, 5000)
+    plot_length_from_path(paths, labels, 5000, 500000)
     plt.legend()
     plt.show()

@@ -6,7 +6,6 @@ from tqdm import tqdm
 import os
 import datetime
 import tensorflow as tf
-from sklearn.utils import shuffle
 
 # settings for writing the files, plotting
 plotting = False
@@ -16,19 +15,19 @@ print_model_summary = True
 print_policy = True
 
 env_name = "FoxInAHolev2"
-len_state = 1
+len_state = 2
 exp_key = f"{len_state}-inp-enc-rewardfound1"
-n_episodes = 500000
-n_holes = 5
+n_episodes = 1000000
+n_holes = 10
 batch_size= 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = len_state
-learning_rate = 0.001
+learning_rate = 0.0001
 averaging_window = 5000
 n_hidden_layers=3
-n_nodes_per_layer=10
+n_nodes_per_layer=100
 activation = 'elu'
 anil= 0.25
 start = 1
@@ -85,7 +84,7 @@ for _ in range(n_reps):
         # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         if save_reward:
             # WORKSTATION
-            directory = f"/data1/bosman/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
             # # ALICE
             # directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
@@ -104,7 +103,7 @@ for _ in range(n_reps):
         
         if save_length:
             # WORKSTATION
-            directory = f"/data1/bosman/resultsQRL/NN/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
             # # ALICE
             # directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
@@ -122,15 +121,17 @@ for _ in range(n_reps):
             np.save(directory, episode_length_history)
 
     if print_policy:
-        state = tf.convert_to_tensor([-1*np.ones(input_dim)])
-
-        for step in range(input_dim):
+        state = tf.convert_to_tensor([-1*np.ones(len_state)])
+        policy = []
+        for _ in range(2*(n_holes-2)):
             action = np.random.choice(n_holes, p = model(state).numpy()[0])
+            policy.append(action)
             ar_state = state.numpy()
-            ar_state[0][step] = action
+            ar_state[0] = np.roll(ar_state[0], 1)
+            ar_state[0][0] = action
             state = tf.convert_to_tensor(ar_state)
 
-        print("Final policy is the following sequence: {}".format(state))
+        print("Final policy is the following sequence: {}".format(policy))
 
 
 if print_model_summary:

@@ -17,8 +17,9 @@ print_policy = False
 save_length = True
 save_reward = True
 
-env_name = "FoxInAHole"
-exp_key = "2(n-2)-inp-enc-rewardfound1"
+env_name = "FoxInAHolev2"
+len_state = 2
+exp_key = f"{len_state}-inp-enc-rewardfound1"
 n_episodes = 500000
 n_holes = 5
 n_layers = 10
@@ -26,17 +27,17 @@ batch_size = 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
-input_dim = 2*(n_holes -2)
+input_dim = len_state
 averaging_window = 5000
 
 anil= 0.25
 start = 1
 
-lr_in= 0.01
+lr_in= 0.001
 lr_var= 0.0001
-lr_out=0.01
+lr_out=0.001
 
-n_reps = 10
+n_reps = 5
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -61,7 +62,7 @@ for _ in range(n_reps):
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
-        episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name)
+        episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name, len_state)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])
@@ -92,23 +93,25 @@ for _ in range(n_reps):
         plot(episode_reward_history, "NN", averaging_window)
 
     if print_policy:
-        state = tf.convert_to_tensor([-1*np.ones(input_dim)])
-
-        for step in range(input_dim):
+        state = tf.convert_to_tensor([-1*np.ones(len_state)])
+        policy = []
+        for _ in range(2*(n_holes-2)):
             action = np.random.choice(n_holes, p = model(state).numpy()[0])
+            policy.append(action)
             ar_state = state.numpy()
-            ar_state[0][step] = action
+            ar_state[0] = np.roll(ar_state[0], 1)
+            ar_state[0][0] = action
             state = tf.convert_to_tensor(ar_state)
 
-        print("Final policy is the following sequence: {}".format(state))
+        print("Final policy is the following sequence: {}".format(policy))
 
     if save_data:
 
         if save_length:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
-                
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -126,7 +129,7 @@ for _ in range(n_reps):
         if save_reward:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
                 
             if not os.path.isdir(directory):
                 os.mkdir(directory)

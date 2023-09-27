@@ -62,7 +62,7 @@ for _ in range(n_reps):
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
-        episodes = agent.gather_episodes(state_bounds, input_dim, n_actions, model, batch_size, env_name, len_state)
+        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])

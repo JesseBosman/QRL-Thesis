@@ -17,14 +17,14 @@ print_policy = True
 env_name = "FoxInAHolev2"
 len_state = 2
 exp_key = f"{len_state}-inp-enc-rewardfound1"
-n_episodes = 1000000
-n_holes = 10
+n_episodes = 250000
+n_holes = 5
 batch_size= 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = len_state
-learning_rate = 0.0001
+learning_rate = 0.001
 averaging_window = 5000
 n_hidden_layers=3
 n_nodes_per_layer=100
@@ -35,7 +35,7 @@ start = 1
 save_length = True
 save_reward = True
 
-n_reps = 10
+n_reps = 2
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -83,10 +83,10 @@ for _ in range(n_reps):
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
         # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         if save_reward:
-            # WORKSTATION
-            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
-            # # ALICE
-            # directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
+            # Alice
+            # directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            # workstation
+            directory = f"/data1/bosman/resultsQRL/NN/ep_reward/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -102,10 +102,10 @@ for _ in range(n_reps):
             np.save(directory, episode_reward_history)
         
         if save_length:
-            # WORKSTATION
-            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
-            # # ALICE
-            # directory = f"/home/s2025396/data1/ResultsQRL/NN/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
+            # Alice
+            # directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            # workstation
+            directory = f"/data1/bosman/resultsQRL/NN/ep_length/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 

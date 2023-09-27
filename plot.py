@@ -194,22 +194,27 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [   
-        # "C:/Users/thebo/Documents/Studie/Master/QRL-Thesis/QRL-Thesis/lengthsProbabilityAgent10holes1000000neps/",
-        # "C:/Users/thebo/Documents/Studie/Master/resultsQRL/NN/ep_length/2-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/"
+        "lengthsProbabilityAgent5holes500000neps/",
+        "/data1/bosman/resultsQRL/PQC/ep_length/2-inp-enc-rewardfound15holes10layersneps500000lrin0.001lrvar0.0001lrout0.001bsize10gamma1start1anil0.25/"
 
-        "C:/Users/thebo/Documents/Studie/Master/QRL-Thesis/QRL-Thesis/lengthsProbabilityAgent5holes500000neps/",
-        "C:/Users/thebo/Documents/Studie/Master/resultsQRL/PQC/ep_length/2-inp-enc-rewardfound15holes10layersneps500000lrin0.001lrvar0.0001lrout0.001bsize10gamma1start1anil0.25/"
+        # "/data1/bosman/resultsQRL/NN/ep_length/2-inp-enc-rewardfound15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        # "/data1/bosman/resultsQRL/NN/ep_length/2-inp-enc-rewardfound15holes3layers5nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/"
     ]
+       
     labels = [
         "probability agent",
-        "PQC 5 holes 2 inputs"
+        "PQC"
+
+
+        # "10 nodes",
+        # "5 nodes"
         
 
-        # "pqc 5 holes 2 input"
+
 
     ]
 
 
-    plot_length_from_path(paths, labels, 5000, 500000)
+    plot_length_from_path(paths, labels, 5000, 250000)
     plt.legend()
     plt.show()

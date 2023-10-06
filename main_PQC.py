@@ -6,6 +6,7 @@ from plot import plot
 from tqdm import tqdm
 import datetime
 import os
+import multiprocessing as mp
 
 # settings for writing the files, plotting
 plotting = False
@@ -21,8 +22,8 @@ env_name = "FoxInAHolev2"
 len_state = 2
 exp_key = f"{len_state}-inp-enc-rewardfound1"
 n_episodes = 250000
-n_holes = 10
-n_layers = 10
+n_holes = 5
+n_layers = 20
 batch_size = 10
 n_actions = n_holes
 state_bounds = 1
@@ -44,7 +45,8 @@ agent = reinforce_agent(batch_size=batch_size)
 
 
 # Start training the agent
-for _ in range(n_reps):
+# for _ in range(n_reps):
+def run():
     episode_reward_history = []
     episode_length_history = []
     # As the different sets of parameters require different learning rates, create seperate optimizers
@@ -145,5 +147,19 @@ for _ in range(n_reps):
 
             np.save(directory, episode_reward_history)
 
-if print_model_summary:
-    model.summary()
+    if print_model_summary:
+        model.summary()
+
+n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+
+print("The number of cores available is {}".format(n_cores))
+
+def test_run():
+    for i in tqdm(range(1000)):
+        x = i*i
+
+if __name__ == '__main__':
+    for _ in range(n_reps):
+        run()
+    # p = mp.Pool(int(n_cores))
+    # res = p.starmap(test_run, [() for _ in range(n_reps)])

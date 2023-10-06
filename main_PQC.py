@@ -10,7 +10,7 @@ import os
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = False
+save_data = True
 print_model_summary = True
 print_policy = True
 
@@ -19,8 +19,8 @@ save_reward = True
 
 env_name = "FoxInAHolev2"
 len_state = 5
-exp_key = f"{len_state}-inp-enc-rewardfound1"
-n_episodes = 250
+exp_key = f"{len_state}-inp-PQC-v2"
+n_episodes = 250000
 n_holes = 5
 n_layers = 5
 batch_size = 10
@@ -35,9 +35,8 @@ start = 1
 
 lr_in= 0.001
 lr_var= 0.0001
-lr_out=0.001
 
-n_reps = 1
+n_reps = 2
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -50,8 +49,7 @@ for _ in range(n_reps):
     # As the different sets of parameters require different learning rates, create seperate optimizers
     optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
     optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
-    optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
-
+    
     # Assign the model parameters to each optimizer
     w_in, w_var = 1, 0
 
@@ -110,8 +108,13 @@ for _ in range(n_reps):
         if save_length:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+
+            # # ALICE
+            # directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             
+            # WORKSTATION
+            directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -129,8 +132,11 @@ for _ in range(n_reps):
         if save_reward:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
-                
+            ##ALICE
+            #directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+
+            # WORKSTATION
+            directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 

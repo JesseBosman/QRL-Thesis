@@ -111,18 +111,24 @@ class Alternating(tf.keras.layers.Layer):
             trainable=True, name="obs-weights")
 
     def call(self, inputs):
-        return tf.matmul(inputs, self.w)
-        
+        print("inputs")
+        print(tf.shape(inputs))
+        print("weights")
+        print(tf.shape(self.w))
+        x = tf.matmul(inputs, self.w)
+        print(tf.shape(x))
+        return x
+
 def generate_model_policy(n_qubits, n_layers, n_actions, beta):
     """Generates a Keras model for a data re-uploading PQC policy."""
     qubits = cirq.GridQubit.rect(1, n_qubits)
     ops = [cirq.Z(q) for q in qubits]
-    observables = [reduce((lambda x, y: x * y), ops)] # Z_0*Z_1*Z_2*Z_3
+    observables = ops # Z for every qubit
 
     input_tensor = tf.keras.Input(shape=(len(qubits), ), dtype=tf.dtypes.float32, name='input')
     re_uploading_pqc = ReUploadingPQC(qubits, n_layers, observables)([input_tensor])
     process = tf.keras.Sequential([
-        Alternating(n_actions),
+        # Alternating(n_actions),
         tf.keras.layers.Lambda(lambda x: x * beta),
         tf.keras.layers.Softmax()
     ], name="observables-policy")

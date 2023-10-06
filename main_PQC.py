@@ -10,7 +10,7 @@ import os
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = True
+save_data = False
 print_model_summary = True
 print_policy = True
 
@@ -18,11 +18,11 @@ save_length = True
 save_reward = True
 
 env_name = "FoxInAHolev2"
-len_state = 2
+len_state = 5
 exp_key = f"{len_state}-inp-enc-rewardfound1"
-n_episodes = 250000
-n_holes = 10
-n_layers = 10
+n_episodes = 250
+n_holes = 5
+n_layers = 5
 batch_size = 10
 n_actions = n_holes
 state_bounds = 1
@@ -37,7 +37,7 @@ lr_in= 0.001
 lr_var= 0.0001
 lr_out=0.001
 
-n_reps = 10
+n_reps = 1
 
 agent = reinforce_agent(batch_size=batch_size)
 
@@ -53,10 +53,10 @@ for _ in range(n_reps):
     optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
 
     # Assign the model parameters to each optimizer
-    w_in, w_var, w_out = 1, 0, 2
+    w_in, w_var = 1, 0
 
-    optimizers = [optimizer_in, optimizer_var, optimizer_out]
-    ws= [w_in, w_var, w_out]
+    optimizers = [optimizer_in, optimizer_var]
+    ws= [w_in, w_var]
 
     model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
     for batch in tqdm(range(n_episodes // batch_size)):

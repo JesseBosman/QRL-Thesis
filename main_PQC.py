@@ -19,7 +19,7 @@ save_length = True
 save_reward = True
 
 env_name = "FoxInAHolev2"
-len_state = 3
+len_state = 4
 exp_key = f"{len_state}-inp-enc-rewardfound1"
 n_episodes = 250000
 n_holes = 5

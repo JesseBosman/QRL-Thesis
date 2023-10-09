@@ -1,6 +1,3 @@
-from REINFORCE import reinforce_agent
-from PQC import generate_model_policy, reinforce_update
-import tensorflow as tf
 import numpy as np
 from plot import plot
 from tqdm import tqdm
@@ -34,18 +31,19 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-lr_in= 0.001
-lr_var= 0.0001
+lr_in= 0.01
+lr_var= 0.001
 
-n_reps = 2
-
-agent = reinforce_agent(batch_size=batch_size)
-
-
+n_reps = 10
 
 # Start training the agent
 # for _ in range(n_reps):
 def run():
+    from REINFORCE import reinforce_agent
+    from PQC import generate_model_policy, reinforce_update
+    import tensorflow as tf
+    agent = reinforce_agent(batch_size=batch_size)
+
     episode_reward_history = []
     episode_length_history = []
     # As the different sets of parameters require different learning rates, create seperate optimizers
@@ -111,11 +109,11 @@ def run():
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
 
-            # # ALICE
-            # directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # ALICE
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             
-            # WORKSTATION
-            directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # # WORKSTATION
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
             if not os.path.isdir(directory):
                 os.mkdir(directory)
@@ -134,11 +132,11 @@ def run():
         if save_reward:
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            ##ALICE
-            #directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            #ALICE
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
-            # WORKSTATION
-            directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # # WORKSTATION
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -158,14 +156,24 @@ def run():
 
 n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
 
+try:
+    int(n_cores)
+
+except:
+    
+    print("cores provided are: "+f"{n_cores}")
+    n_cores = n_reps
+
 print("The number of cores available is {}".format(n_cores))
 
 def test_run():
     for i in tqdm(range(1000)):
         x = i*i
 
-if __name__ == '__main__':
-    for _ in range(n_reps):
-        run()
-    # p = mp.Pool(int(n_cores))
-    # res = p.starmap(test_run, [() for _ in range(n_reps)])
+if __name__ == '__main__':     
+       
+    p = mp.Pool(int(n_cores))
+    res = p.starmap(run, [() for _ in range(n_reps)])
+    p.close()
+    p.join()
+    

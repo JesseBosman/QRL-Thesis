@@ -111,12 +111,7 @@ class Alternating(tf.keras.layers.Layer):
             trainable=True, name="obs-weights")
 
     def call(self, inputs):
-        print("inputs")
-        print(tf.shape(inputs))
-        print("weights")
-        print(tf.shape(self.w))
         x = tf.matmul(inputs, self.w)
-        print(tf.shape(x))
         return x
 
 def generate_model_policy(n_qubits, n_layers, n_actions, beta):

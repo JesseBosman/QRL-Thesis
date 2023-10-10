@@ -34,7 +34,7 @@ start = 1
 lr_in= 0.01
 lr_var= 0.001
 
-n_reps = 10
+n_reps = 1
 
 # Start training the agent
 # for _ in range(n_reps):

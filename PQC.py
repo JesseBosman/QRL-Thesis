@@ -111,7 +111,7 @@ class Alternating(tf.keras.layers.Layer):
             trainable=True, name="obs-weights")
 
     def call(self, inputs):
-        x = tf.matmul(inputs, self.w)
+        x = tf.multiply(inputs, self.w)
         return x
 
 def generate_model_policy(n_qubits, n_layers, n_actions, beta):
@@ -129,6 +129,8 @@ def generate_model_policy(n_qubits, n_layers, n_actions, beta):
     ], name="observables-policy")
     policy = process(re_uploading_pqc)
     model = tf.keras.Model(inputs=[input_tensor], outputs=policy)
+    # tf.keras.utils.plot_model(model, show_shapes=True, dpi=70)
+
 
     return model
 

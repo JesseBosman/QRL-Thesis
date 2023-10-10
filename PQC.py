@@ -103,11 +103,11 @@ class ReUploadingPQC(tf.keras.layers.Layer):
         
         return self.computation_layer([tiled_up_circuits, joined_vars])
     
-class Alternating(tf.keras.layers.Layer):
+class ObservableWeights(tf.keras.layers.Layer):
     def __init__(self, output_dim):
-        super(Alternating, self).__init__()
+        super(ObservableWeights, self).__init__()
         self.w = tf.Variable(
-            initial_value=tf.constant([[(-1.)**i for i in range(output_dim)]]), dtype="float32",
+            initial_value= np.random.normal(scale= 0.01, size = output_dim), dtype="float32",
             trainable=True, name="obs-weights")
 
     def call(self, inputs):
@@ -123,7 +123,7 @@ def generate_model_policy(n_qubits, n_layers, n_actions, beta):
     input_tensor = tf.keras.Input(shape=(len(qubits), ), dtype=tf.dtypes.float32, name='input')
     re_uploading_pqc = ReUploadingPQC(qubits, n_layers, observables)([input_tensor])
     process = tf.keras.Sequential([
-        # Alternating(n_actions),
+        ObservableWeights(n_actions),
         tf.keras.layers.Lambda(lambda x: x * beta),
         tf.keras.layers.Softmax()
     ], name="observables-policy")

@@ -8,7 +8,7 @@ import multiprocessing as mp
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = True
+save_data = False
 print_model_summary = True
 print_policy = True
 
@@ -18,7 +18,7 @@ save_reward = True
 env_name = "FoxInAHolev2"
 len_state = 5
 exp_key = f"{len_state}-inp-PQC-v2"
-n_episodes = 250000
+n_episodes = 250
 n_holes = 5
 n_layers = 5
 batch_size = 10
@@ -31,8 +31,9 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-lr_in= 0.01
-lr_var= 0.001
+lr_in= 0.001
+lr_var= 0.0001
+lr_out= 0.001
 
 n_reps = 1
 

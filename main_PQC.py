@@ -158,11 +158,11 @@ def run():
 
 try:
     n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+    print("cores provided are: "+f"{n_cores}")
     n_cores = int(n_cores)
 
 except:
     
-    print("cores provided are: "+f"{n_cores}")
     n_cores = n_reps
 
 print("The number of cores available is {}".format(n_cores))

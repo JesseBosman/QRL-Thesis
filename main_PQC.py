@@ -154,10 +154,11 @@ def run():
     if print_model_summary:
         model.summary()
 
-n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+
 
 try:
-    int(n_cores)
+    n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+    n_cores = int(n_cores)
 
 except:
     

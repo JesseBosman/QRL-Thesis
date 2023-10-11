@@ -8,7 +8,7 @@ import multiprocessing as mp
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = False
+save_data = True
 print_model_summary = True
 print_policy = True
 
@@ -17,8 +17,8 @@ save_reward = True
 
 env_name = "FoxInAHolev2"
 len_state = 5
-exp_key = f"{len_state}-inp-PQC-v2"
-n_episodes = 250
+exp_key = f"{len_state}-inp-PQC-v3"
+n_episodes = 250000
 n_holes = 5
 n_layers = 5
 batch_size = 10
@@ -31,11 +31,15 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-lr_in= 0.001
-lr_var= 0.0001
-lr_out= 0.001
+lr_in= 0.1
+lr_var= 0.01
+lr_out= 0.1
 
-n_reps = 1
+n_reps = 10
+
+print("Hyperparameters are:")
+print("lr: {}".format([lr_in,lr_var,lr_out]))
+print("N layers: {}".formate(n_layers))
 
 # Start training the agent
 # for _ in range(n_reps):
@@ -50,12 +54,13 @@ def run():
     # As the different sets of parameters require different learning rates, create seperate optimizers
     optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
     optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
+    optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
     
     # Assign the model parameters to each optimizer
-    w_in, w_var = 1, 0
+    w_in, w_var, w_out = 1, 0, 2
 
-    optimizers = [optimizer_in, optimizer_var]
-    ws= [w_in, w_var]
+    optimizers = [optimizer_in, optimizer_var, optimizer_out]
+    ws= [w_in, w_var, w_out]
 
     model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
     for batch in tqdm(range(n_episodes // batch_size)):

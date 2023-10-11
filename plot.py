@@ -194,27 +194,17 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [   
-        "lengthsProbabilityAgent10holes1000000neps/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2inp-FoxInAHolev210holes3layers150nodeslr0.0001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2inp-FoxInAHolev210holes3layers125nodeslr0.0001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2-inp-enc-rewardfound110holes3layers100nodeslr0.0001neps1000000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2inp-FoxInAHolev210holes3layers75nodeslr0.0001neps500000bsize10gamma1start1anil0.25elu/",
-        "/data1/bosman/resultsQRL/NN/ep_length/2inp-FoxInAHolev210holes3layers50nodeslr0.0001neps500000bsize10gamma1start1anil0.25elu/"
-        # "/data1/bosman/resultsQRL/PQC/ep_length/2-inp-enc-rewardfound15holes10layersneps500000lrin0.001lrvar0.0001lrout0.001bsize10gamma1start1anil0.25/"
-        # "/data1/bosman/resultsQRL/NN/ep_reward/FoxInAHoleBounded5holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/"
-
+        "lengthsProbabilityAgent5holes1000000neps/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-PQC-v25holes5layersneps250000lrin0.01lrvar0.001bsize10gamma1start1anil0.25/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-PQC-v35holes5layersneps250000lrin0.1lrvar0.01lrout0.1bsize10gamma1start1anil0.25/"
         
         
     ]
        
     labels = [
         "Probability agent",
-        "150 nodes",
-        "125 nodes",
-        "100 nodes",
-        "75 nodes",
-        "50 nodes"
-        # "NN"
+        "v2",
+        "v3"
         
 
 
@@ -222,7 +212,7 @@ if __name__ == '__main__':
     ]
     
 
-    plot_length_from_path(paths, labels, 10000, 500000)
+    plot_length_from_path(paths, labels, 5000, 250000)
     # plot_reward_from_path(paths, labels, 5000)
     plt.legend()
-    plt.show()
+    plt.savefig("plot.pdf")

@@ -16,11 +16,11 @@ save_length = True
 save_reward = True
 
 env_name = "FoxInAHolev2"
-len_state = 5
+len_state = 10
 exp_key = f"{len_state}-inp-PQC-v3"
-n_episodes = 250000
-n_holes = 5
-n_layers = 5
+n_episodes = 500000
+n_holes = 10
+n_layers = 1
 batch_size = 10
 n_actions = n_holes
 state_bounds = 1
@@ -31,15 +31,17 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-lr_in= 0.1
-lr_var= 0.01
-lr_out= 0.1
+lr_in= 0.01
+lr_var= 0.001
+lr_out= 0.01
 
 n_reps = 10
 
 print("Hyperparameters are:")
 print("lr: {}".format([lr_in,lr_var,lr_out]))
-print("N layers: {}".formate(n_layers))
+print("N layers: {}".format(n_layers))
+print("N holes: {}".format(n_holes))
+print("Len state: {}".format(len_state))
 
 # Start training the agent
 # for _ in range(n_reps):
@@ -178,7 +180,7 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-       
+    # run()  
     p = mp.Pool(int(n_cores))
     res = p.starmap(run, [() for _ in range(n_reps)])
     p.close()

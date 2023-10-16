@@ -194,17 +194,43 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 if __name__ == '__main__':
     paths = [   
-        "lengthsProbabilityAgent5holes1000000neps/",
-        "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-PQC-v25holes5layersneps250000lrin0.01lrvar0.001bsize10gamma1start1anil0.25/",
-        "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-PQC-v35holes5layersneps250000lrin0.1lrvar0.01lrout0.1bsize10gamma1start1anil0.25/"
-        
-        
+        "lengthsProbabilityAgent10holes1000000neps/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/10-inp-PQC-v310holes1layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
+
+
+        # "lengthsProbabilityAgent5holes1000000neps/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/3inp-FoxInAHolev25holes2layers3nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers10nodeslr0.0005neps500000bsize10gamma1start1anil0.25elu/",
+        # # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers4nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers4nodeslr0.0005neps500000bsize10gamma1start1anil0.25elu/",
+        # # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers3nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes3layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes2layers5nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes2layers3nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev25holes2layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/3-inp-PQC-v35holes1layersneps250000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-PQC-v35holes1layersneps250000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
     ]
        
     labels = [
         "Probability agent",
-        "v2",
-        "v3"
+        "PQC 10 qubits 1 layer"
+
+        # "NN 3 inp 3 layers 3 nodes (44 params)",
+        # #"3 layers 10 nodes (305 params)",
+        # "NN 3 layers 10 nodes lr 0.0005 (305 params)",
+        # #"3 layers 4 nodes (77 params)",
+        # "NN 3 layers 4 nodes lr 0.0005 (77 params)",
+        # #"3 layers 3 nodes (53 params)",
+        # "NN 3 layers 2 nodes (33 params)",
+        # "NN 2 layers 5 nodes (75 params)",
+        # #"2 layers 3 nodes (41 params)",
+        # "NN 2 layers 2 nodes (27 params)",
+        # "PQC 3 qubits 1 layer (17 params)",
+        # "PQC 5 qubits 1 layer (25 params)"
+
+
         
 
 
@@ -212,7 +238,7 @@ if __name__ == '__main__':
     ]
     
 
-    plot_length_from_path(paths, labels, 5000, 250000)
+    plot_length_from_path(paths, labels, 5000, 500000)
     # plot_reward_from_path(paths, labels, 5000)
     plt.legend()
     plt.savefig("plot.pdf")

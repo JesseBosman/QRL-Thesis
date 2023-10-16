@@ -4,6 +4,7 @@ from tqdm import tqdm
 import os
 import datetime
 from mathematical_agents import ProbabilityAgent, BoundAgent, PickMiddle
+import multiprocessing as mp
 
 # settings for writing the files, plotting
 plotting = False
@@ -11,12 +12,12 @@ print_avg = False
 save_data = True
 plot_probabilities = False
 
-from fox_in_a_hole_gym import FoxInAHole
+from fox_in_a_hole_gym import FoxInAHolev2
 
 
 exp_key = "ProbabilityAgent"
-n_episodes = 500000
-n_holes = 5
+n_episodes = 1000000
+n_holes = 10
 n_actions = n_holes
 n_reps = 10
 
@@ -47,7 +48,10 @@ if plot_probabilities:
             
 # Start training the agent
 else:
-    env = FoxInAHole(n_holes=n_holes)
+    pass
+
+def run():
+    env = FoxInAHolev2(n_holes=n_holes)
     for rep in range(n_reps):
         episode_reward_history = []
         episode_length_history = []
@@ -118,6 +122,28 @@ else:
 
 
             np.save(directory, episode_length_history)
+
+try:
+    n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+    print("cores provided are: "+f"{n_cores}")
+    n_cores = int(n_cores)
+
+except:
+    
+    n_cores = n_reps
+
+print("The number of cores available is {}".format(n_cores))
+
+def test_run():
+    for i in tqdm(range(1000)):
+        x = i*i
+
+if __name__ == '__main__':     
+    # run()  
+    p = mp.Pool(int(n_cores))
+    res = p.starmap(run, [() for _ in range(n_reps)])
+    p.close()
+    p.join()
 
 
             

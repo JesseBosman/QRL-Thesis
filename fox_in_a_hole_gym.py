@@ -1,7 +1,6 @@
-import gym
 import numpy as np
 
-class FoxInAHole(gym.Env):
+class FoxInAHole():
     def __init__(self, n_holes=5, env_config={}):
         self.n_holes = n_holes
         self.hole_nr = None
@@ -81,7 +80,7 @@ class FoxInAHole(gym.Env):
         
         return self.state, reward, done, {}
             
-class FoxInAHolev2(gym.Env):
+class FoxInAHolev2():
     def __init__(self, n_holes=5, env_config={}, len_state = 4):
         self.n_holes = n_holes
         self.hole_nr = None
@@ -168,7 +167,7 @@ class FoxInAHolev2(gym.Env):
         
         return self.state, reward, done, {}
     
-class FoxInAHoleBounded(gym.Env):
+class FoxInAHoleBounded():
     def __init__(self, n_holes=5, env_config={}, len_state = None):
         self.n_holes = n_holes
         self.hole_nr = None

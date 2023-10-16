@@ -5,7 +5,7 @@
 import tensorflow as tf
 import tensorflow_quantum as tfq
 
-import gym, cirq, sympy
+import cirq, sympy
 # import gymnasium as gym
 import numpy as np
 from functools import reduce
@@ -25,11 +25,8 @@ class reinforce_agent():
       """Interact with environment in batched fashion."""
 
       trajectories = [defaultdict(list) for _ in range(batch_size)]
-      if env_name.lower() != "foxinahole" and env_name.lower() != "foxinaholev2" and env_name.lower() != "foxinaholebounded":
-         
-        envs = [gym.make(env_name) for _ in range(batch_size)]
-      
-      elif env_name.lower() =="foxinahole":
+    
+      if env_name.lower() =="foxinahole":
          envs = [FoxInAHole(n_holes=n_holes) for _ in range(batch_size)]
         
       elif env_name.lower()=="foxinaholev2":

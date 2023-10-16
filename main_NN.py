@@ -1,11 +1,10 @@
-from REINFORCE import reinforce_agent
-from NN import PolicyModel
 import numpy as np
 from plot import plot
 from tqdm import tqdm
 import os
 import datetime
-import tensorflow as tf
+import multiprocessing as mp
+
 
 # settings for writing the files, plotting
 plotting = False
@@ -18,16 +17,16 @@ env_name = "FoxInAHolev2"
 len_state = 2
 exp_key = f"{len_state}inp-{env_name}"
 n_episodes = 500000
-n_holes = 10
+n_holes = 5
 batch_size= 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = len_state
-learning_rate = 0.00005
+learning_rate = 0.0005
 averaging_window = 5000
 n_hidden_layers=3
-n_nodes_per_layer= 100
+n_nodes_per_layer= 10
 activation = 'elu'
 anil= 0.25
 start = 1
@@ -35,13 +34,20 @@ start = 1
 save_length = True
 save_reward = True
 
-n_reps = 2
+n_reps = 10
 
-agent = reinforce_agent(batch_size=batch_size)
+print("Hyperparameters are:")
+print("n layers {} n nodes {} lr {}".format(n_hidden_layers, n_nodes_per_layer, learning_rate))
+
+
 
 # Start training the agent
 
-for _ in range(n_reps):
+def run():
+    import tensorflow as tf
+    from REINFORCE import reinforce_agent
+    from NN import PolicyModel
+    agent = reinforce_agent(batch_size=batch_size)
     model = PolicyModel(activation_function=activation, n_hidden_layers= n_hidden_layers, n_nodes_per_layer=n_nodes_per_layer, input_dim= input_dim, output_dim=n_actions, learning_rate= learning_rate)
     episode_reward_history = []
     episode_length_history = []
@@ -84,9 +90,9 @@ for _ in range(n_reps):
         # directory = f"/data1/bosman/resultsQRL/NN/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}/'
         if save_reward:
             # Alice
-            # directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
-            # workstation
-            directory = f"/data1/bosman/resultsQRL/NN/ep_reward/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
+            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            # # workstation
+            # directory = f"/data1/bosman/resultsQRL/NN/ep_reward/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -103,9 +109,9 @@ for _ in range(n_reps):
         
         if save_length:
             # Alice
-            # directory = f"/home/s2025396/data1/resultsQRL/NN/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
-            # workstation
-            directory = f"/data1/bosman/resultsQRL/NN/ep_length/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
+            directory = f"/home/s2025396/data1/resultsQRL/NN/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_hidden_layers}layers'+f''+f'{n_nodes_per_layer}nodes'+f'lr{learning_rate}'+f'neps{n_episodes}'+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}"+f"{activation}/"
+            # # workstation
+            # directory = f"/data1/bosman/resultsQRL/NN/ep_length/"+exp_key+f"{n_holes}holes"+f"{n_hidden_layers}layers"+f"{n_nodes_per_layer}nodes"+f"lr{learning_rate}"+f"neps{n_episodes}"+f"bsize{batch_size}"+f"gamma{gamma}"+f"start{start}"+f"anil{anil}"+f"{activation}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -134,5 +140,28 @@ for _ in range(n_reps):
         print("Final policy is the following sequence: {}".format(policy))
 
 
-if print_model_summary:
-    model.model.summary()
+    if print_model_summary:
+        model.model.summary()
+
+try:
+    n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+    print("cores provided are: "+f"{n_cores}")
+    n_cores = int(n_cores)
+
+except:
+    
+    n_cores = n_reps
+
+print("The number of cores available is {}".format(n_cores))
+
+def test_run():
+    for i in tqdm(range(1000)):
+        x = i*i
+
+if __name__ == '__main__':     
+    # run()  
+    p = mp.Pool(int(n_cores))
+    res = p.starmap(run, [() for _ in range(n_reps)])
+    p.close()
+    p.join()
+    

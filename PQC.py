@@ -1,7 +1,7 @@
 import tensorflow as tf
 import tensorflow_quantum as tfq
 
-import gym, cirq, sympy
+import cirq, sympy
 import numpy as np
 from functools import reduce
 from collections import deque, defaultdict
@@ -118,6 +118,7 @@ def generate_model_policy(n_qubits, n_layers, n_actions, beta):
     """Generates a Keras model for a data re-uploading PQC policy."""
     qubits = cirq.GridQubit.rect(1, n_qubits)
     ops = [cirq.Z(q) for q in qubits]
+    # ops.extend([cirq.Z(qubits[0])*cirq.Z(qubits[n_qubits-1]), cirq.Z(qubits[1])*cirq.Z(qubits[n_qubits-1])])
     observables = ops # Z for every qubit
 
     input_tensor = tf.keras.Input(shape=(len(qubits), ), dtype=tf.dtypes.float32, name='input')

@@ -13,7 +13,7 @@ from collections import deque, defaultdict
 import matplotlib.pyplot as plt
 from cirq.contrib.svg import SVGCircuit
 
-from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded
+from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded, QFIAHv1
 
 class reinforce_agent():
   def __init__(self, batch_size):
@@ -34,6 +34,9 @@ class reinforce_agent():
 
       elif env_name.lower()=="foxinaholebounded":
          envs = [FoxInAHoleBounded(n_holes=n_holes) for _ in range(batch_size)]
+
+      elif env_name.lower() == "qfiahv1":
+         envs = [QFIAHv1(n_holes=n_holes, len_state= len_state) for _ in range(batch_size)]
 
       else:
          raise KeyError

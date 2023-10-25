@@ -16,11 +16,12 @@ save_length = True
 save_reward = True
 
 env_name = "FoxInAHolev2"
-len_state = 10
-exp_key = f"{len_state}-inp-PQC-v3"
-n_episodes = 500000
+len_state = 2
+exp_key = f"{len_state}-inp-PQC-v4"
+n_episodes = 1000000
 n_holes = 10
-n_layers = 1
+n_layers = 5
+n_qubits = 10
 batch_size = 10
 n_actions = n_holes
 state_bounds = 1
@@ -41,6 +42,7 @@ print("Hyperparameters are:")
 print("lr: {}".format([lr_in,lr_var,lr_out]))
 print("N layers: {}".format(n_layers))
 print("N holes: {}".format(n_holes))
+print("nqubits {}".format(n_qubits))
 print("Len state: {}".format(len_state))
 
 # Start training the agent
@@ -64,7 +66,7 @@ def run():
     optimizers = [optimizer_in, optimizer_var, optimizer_out]
     ws= [w_in, w_var, w_out]
 
-    model = generate_model_policy(n_qubits= input_dim, n_layers= n_layers, n_actions= n_actions, beta= 1)
+    model = generate_model_policy(n_qubits= n_qubits, n_layers= n_layers, n_actions= n_actions, n_inputs = len_state, beta= 1)
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
@@ -118,10 +120,10 @@ def run():
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
 
             # ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             
             # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
             if not os.path.isdir(directory):
                 os.mkdir(directory)
@@ -141,10 +143,10 @@ def run():
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
             #ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
             # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 

@@ -93,3 +93,63 @@ class PickMiddle():
         pass
 
 
+class QuantumProbabilityAgent():
+    def __init__(self, n_holes, print_hole_prob):
+        self.n_holes = n_holes
+        self.print_holeprob = print_hole_prob
+        self.action = None
+        self.current_policy_sequence = []
+        self.longest_policy_sequence = []
+        if n_holes == 5:
+            self.T_odd = np.array([[0, 2**(-0.5), 0, 0, 0],
+                                [1, 0, 2**(-0.5), 0, 0],
+                                [0, 2**(-0.5), 0, 2**(-0.5), 0],
+                                [0, 0, 2**(-0.5), 0, 1],
+                                [0, 0, 0, 2**(-0.5), 0]])
+            
+            self.T_even = np.array([[0, 2**(-0.5), 0, 0, 0],
+                                [-1, 0, 2**(-0.5), 0, 0],
+                                [0, -2**(-0.5), 0, 2**(-0.5), 0],
+                                [0, 0, -2**(-0.5), 0, 1],
+                                [0, 0, 0, -2**(-0.5), 0]])
+
+        else:
+            raise ValueError
+        
+        self.possible_fox_states= np.eye(self.n_holes)
+        self.move_counter = 0
+    
+    def pick_hole(self):
+        
+        if self.current_policy_sequence == []:
+            action = 1
+        else:
+            hole_probs = np.sum(self.possible_fox_states**2, axis=1)
+            action = np.argmax(hole_probs)
+        self.action = action
+        self.current_policy_sequence.append(action)
+        if self.print_holeprob:
+            print("The probabilities per hole was {} so the hole choosen was {}".format(np.sum(self.possible_fox_states**2, axis = 1), (self.action)))
+        return action
+    
+    def update_probabilities(self):
+        possible_fox_states = self.possible_fox_states
+        possible_fox_states[self.action, :]=0
+        if self.move_counter%2==0:
+            possible_fox_states = np.matmul(self.T_even, possible_fox_states)
+        else:
+            possible_fox_states = np.matmul(self.T_odd, possible_fox_states)
+
+        norms = np.linalg.norm(possible_fox_states, axis = 0)
+        norms = np.where(norms!=0, norms, 1)
+        self.possible_fox_states = possible_fox_states/norms
+        self.move_counter+=1
+        pass
+
+    def reset(self):
+        if len(self.current_policy_sequence) > len(self.longest_policy_sequence):
+            self.longest_policy_sequence = self.current_policy_sequence
+        
+        self.current_policy_sequence = []
+        self.possible_fox_states = np.eye(self.n_holes)
+        self.move_counter = 0

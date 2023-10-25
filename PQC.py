@@ -18,6 +18,14 @@ def one_qubit_rotation(qubit, symbols):
             cirq.ry(symbols[1])(qubit),
             cirq.rz(symbols[2])(qubit)]
 
+# def one_qubit_rotation(qubit, symbols):
+#     """
+#     Returns Cirq gates that apply a rotation of the bloch sphere about the X,
+#     Y and Z axis, specified by the values in `symbols`.
+#     """
+#     print("only using RX gate")
+#     return [cirq.rx(symbols[0])(qubit)]
+
 def entangling_layer(qubits):
     """
     Returns a layer of CZ entangling gates on `qubits` (arranged in a circular topology).
@@ -26,18 +34,28 @@ def entangling_layer(qubits):
     cz_ops += ([cirq.CZ(qubits[0], qubits[-1])] if len(qubits) != 2 else [])
     return cz_ops
 
-def generate_circuit(qubits, n_layers):
+# def entangling_layer(qubits):
+#     """
+#     Returns a layer of CZ entangling gates on `qubits` (arranged in a circular topology).
+#     """
+#     print("using Cnot instead of CZ")
+#     cNOT_ops = [cirq.CNOT(q0, q1) for q0, q1 in zip(qubits, qubits[1:])]
+#     cNOT_ops += ([cirq.CNOT(qubits[0], qubits[-1])] if len(qubits) != 2 else [])
+#     return cNOT_ops
+
+def generate_circuit(qubits, n_layers, n_inputs):
     """Prepares a data re-uploading circuit on `qubits` with `n_layers` layers."""
     # Number of qubits
     n_qubits = len(qubits)
     
     # Sympy symbols for variational angles
     params = sympy.symbols(f'theta(0:{3*(n_layers+1)*n_qubits})')
+    # params = sympy.symbols(f'theta(0:{1*(n_layers+1)*n_qubits})')  # for Rx Cnot
     params = np.asarray(params).reshape((n_layers + 1, n_qubits, 3))
     
     # Sympy symbols for encoding angles
-    inputs = sympy.symbols(f'x(0:{n_layers})'+f'_(0:{n_qubits})')
-    inputs = np.asarray(inputs).reshape((n_layers, n_qubits))
+    inputs = sympy.symbols(f'x(0:{n_layers})'+f'_(0:{n_inputs})')
+    inputs = np.asarray(inputs).reshape((n_layers, n_inputs))
     
     # Define circuit
     circuit = cirq.Circuit()
@@ -46,7 +64,7 @@ def generate_circuit(qubits, n_layers):
         circuit += cirq.Circuit(one_qubit_rotation(q, params[l, i]) for i, q in enumerate(qubits))
         circuit += entangling_layer(qubits)
         # Encoding layer
-        circuit += cirq.Circuit(cirq.rx(inputs[l, i])(q) for i, q in enumerate(qubits))
+        circuit += cirq.Circuit(cirq.rx(inputs[l, i])(qubits[i]) for i in range(n_inputs))
 
     # Last varitional layer
     circuit += cirq.Circuit(one_qubit_rotation(q, params[n_layers, i]) for i,q in enumerate(qubits))
@@ -63,12 +81,13 @@ class ReUploadingPQC(tf.keras.layers.Layer):
         by the ControlledPQC.
     """
 
-    def __init__(self, qubits, n_layers, observables, activation="linear", name="re-uploading_PQC"):
+    def __init__(self, qubits, n_layers, n_inputs, observables, activation="linear", name="re-uploading_PQC"):
         super(ReUploadingPQC, self).__init__(name=name)
         self.n_layers = n_layers
         self.n_qubits = len(qubits)
+        self.n_inputs = n_inputs
 
-        circuit, theta_symbols, input_symbols = generate_circuit(qubits, n_layers)
+        circuit, theta_symbols, input_symbols = generate_circuit(qubits, n_layers, n_inputs)
 
         theta_init = tf.random_uniform_initializer(minval=0.0, maxval=np.pi)
         self.theta = tf.Variable(
@@ -76,7 +95,7 @@ class ReUploadingPQC(tf.keras.layers.Layer):
             trainable=True, name="thetas"
         )
         
-        lmbd_init = tf.ones(shape=(self.n_qubits * self.n_layers,))
+        lmbd_init = tf.ones(shape=(self.n_inputs * self.n_layers,))
         self.lmbd = tf.Variable(
             initial_value=lmbd_init, dtype="float32", trainable=True, name="lambdas"
         )
@@ -114,15 +133,17 @@ class ObservableWeights(tf.keras.layers.Layer):
         x = tf.multiply(inputs, self.w)
         return x
 
-def generate_model_policy(n_qubits, n_layers, n_actions, beta):
+def generate_model_policy(n_qubits, n_layers, n_actions, n_inputs, beta):
     """Generates a Keras model for a data re-uploading PQC policy."""
     qubits = cirq.GridQubit.rect(1, n_qubits)
     ops = [cirq.Z(q) for q in qubits]
+    if n_actions!= n_qubits:
+        ops.extend([cirq.Z(qubits[i])*cirq.Z(qubits[i+1]) for i in range(int(n_actions - n_qubits))])
     # ops.extend([cirq.Z(qubits[0])*cirq.Z(qubits[n_qubits-1]), cirq.Z(qubits[1])*cirq.Z(qubits[n_qubits-1])])
     observables = ops # Z for every qubit
 
-    input_tensor = tf.keras.Input(shape=(len(qubits), ), dtype=tf.dtypes.float32, name='input')
-    re_uploading_pqc = ReUploadingPQC(qubits, n_layers, observables)([input_tensor])
+    input_tensor = tf.keras.Input(shape=(n_inputs, ), dtype=tf.dtypes.float32, name='input')
+    re_uploading_pqc = ReUploadingPQC(qubits, n_layers, n_inputs, observables)([input_tensor])
     process = tf.keras.Sequential([
         ObservableWeights(n_actions),
         tf.keras.layers.Lambda(lambda x: x * beta),

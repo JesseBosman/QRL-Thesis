@@ -9,24 +9,24 @@ import multiprocessing as mp
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = True
+save_data = False
 print_model_summary = True
 print_policy = True
 
-env_name = "FoxInAHolev2"
+env_name = "QFIAHv1"
 len_state = 2
 exp_key = f"{len_state}inp-{env_name}"
-n_episodes = 500000
+n_episodes = 10
 n_holes = 5
-batch_size= 10
+batch_size= 1
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = len_state
-learning_rate = 0.0005
+learning_rate = 0.001
 averaging_window = 5000
-n_hidden_layers=3
-n_nodes_per_layer= 10
+n_hidden_layers=1
+n_nodes_per_layer= 2
 activation = 'elu'
 anil= 0.25
 start = 1
@@ -34,7 +34,7 @@ start = 1
 save_length = True
 save_reward = True
 
-n_reps = 10
+n_reps = 1
 
 print("Hyperparameters are:")
 print("n layers {} n nodes {} lr {}".format(n_hidden_layers, n_nodes_per_layer, learning_rate))
@@ -159,9 +159,9 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-    # run()  
-    p = mp.Pool(int(n_cores))
-    res = p.starmap(run, [() for _ in range(n_reps)])
-    p.close()
-    p.join()
+    run()  
+    # p = mp.Pool(int(n_cores))
+    # res = p.starmap(run, [() for _ in range(n_reps)])
+    # p.close()
+    # p.join()
     

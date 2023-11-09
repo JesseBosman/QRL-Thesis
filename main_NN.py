@@ -9,32 +9,35 @@ import multiprocessing as mp
 # settings for writing the files, plotting
 plotting = False
 print_avg = False
-save_data = False
+save_data = True
 print_model_summary = True
 print_policy = True
-
 env_name = "QFIAHv1"
 len_state = 2
-exp_key = f"{len_state}inp-{env_name}"
-n_episodes = 10
-n_holes = 5
-batch_size= 1
+prob_1=3/14
+prob_2=11/14
+n_episodes = 500000
+n_holes = 10
+max_steps= 2*(n_holes-2)
+batch_size= 10
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
 input_dim = len_state
 learning_rate = 0.001
 averaging_window = 5000
-n_hidden_layers=1
+n_hidden_layers= 2
 n_nodes_per_layer= 2
 activation = 'elu'
 anil= 0.25
 start = 1
 
+exp_key = f"{len_state}inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}"
+
 save_length = True
 save_reward = True
 
-n_reps = 1
+n_reps = 10
 
 print("Hyperparameters are:")
 print("n layers {} n nodes {} lr {}".format(n_hidden_layers, n_nodes_per_layer, learning_rate))
@@ -55,7 +58,7 @@ def run():
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
-        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state=len_state)
+        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state=len_state, max_steps = max_steps, prob_1=prob_1, prob_2=prob_2)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])
@@ -159,9 +162,9 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-    run()  
-    # p = mp.Pool(int(n_cores))
-    # res = p.starmap(run, [() for _ in range(n_reps)])
-    # p.close()
-    # p.join()
+    # run()  
+    p = mp.Pool(int(n_cores))
+    res = p.starmap(run, [() for _ in range(n_reps)])
+    p.close()
+    p.join()
     

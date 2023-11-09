@@ -15,9 +15,9 @@ print_policy = True
 plot_distribution = False
 save_length = True
 save_reward = True
-RxCnot = True
+RxCnot = False
 
-env_name = "QFIAHv2"
+env_name = "FoxInAHolev2"
 len_state = 2
 prob_1= 3/14
 prob_2= 11/14
@@ -25,8 +25,8 @@ n_episodes = 250000
 n_holes = 5
 max_steps = 2*(n_holes-2)
 n_layers = 1
-n_qubits = 5
-batch_size = 10
+n_qubits = 3
+batch_size = 1
 n_actions = n_holes
 state_bounds = 1
 gamma = 1
@@ -34,22 +34,28 @@ input_dim = len_state
 averaging_window = 5000
 
 if RxCnot:
-    exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-PQC-v4-RxCNOT"
+    if env_name.lower() == 'qfiahv1':
+        exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-red_PQC-RxCNOT"
+    
+    else:
+        exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-red_PQC-RxCNOT"
 
 else:
-    exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-PQC-v4"
+    if env_name.lower() == 'qfiahv1':
+        exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-red_PQC"
+    
+    else:
+        exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-red_PQC-RxCNOT"
 
 anil= 0.25
 start = 1
 
-lr_in= 0.01
-lr_var= 0.01
-lr_out= 0.01
+lr = 0.01
 
 n_reps = 10
 
 print("Hyperparameters are:")
-print("lr: {}".format([lr_in,lr_var,lr_out]))
+print("lr: {}".format(lr))
 print("N layers: {}".format(n_layers))
 print("N holes: {}".format(n_holes))
 print("nqubits {}".format(n_qubits))
@@ -61,34 +67,29 @@ print("RxCnot is {}".format(RxCnot))
 def run():
     from REINFORCE import reinforce_agent
     # from PQC import generate_model_policy, reinforce_update
-    from PQC import generate_model_policy, reinforce_update
+    from PQC_qibo import ReUploadingPQC_reduced, reinforce_update_reduced
     import tensorflow as tf
     agent = reinforce_agent(batch_size=batch_size)
 
     episode_reward_history = []
     episode_length_history = []
     # As the different sets of parameters require different learning rates, create seperate optimizers
-    optimizer_in = tf.keras.optimizers.Adam(learning_rate=lr_in, amsgrad=True)
-    optimizer_var = tf.keras.optimizers.Adam(learning_rate=lr_var, amsgrad=True)
-    optimizer_out = tf.keras.optimizers.Adam(learning_rate=lr_out, amsgrad=True)
-    
-    # Assign the model parameters to each optimizer
-    w_in, w_var, w_out = 1, 0, 2
-    # w_in, w_var = 1, 0
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr, amsgrad=True)
+    w_init = tf.random_uniform_initializer(minval=-np.pi, maxval=np.pi)
+    if RxCnot:
+        params = tf.Variable(
+                initial_value= w_init(shape=((n_qubits+len_state)*n_layers+n_qubits,)),
+                trainable=True,
+                name = "ReUploadingPQCweights"
+            )
+    else:
 
-    optimizers = [optimizer_in, optimizer_var, optimizer_out]
-    ws= [w_in, w_var, w_out]
-
-    model = generate_model_policy(n_qubits= 
-    n_qubits, n_layers= n_layers, n_actions= n_actions, n_inputs = len_state, beta= 1, RxCnot= RxCnot)
-    n_batches = n_episodes // batch_size
-
-    # if plot_distribution:
-
-    #     possible_states= np.array(list(combinations(np.arange(-1,n_holes, 1),2)))
-    #     possible_states = tf.convert_to_tensor(possible_states)
-
-    # probs_total = np.zeros(n_holes)
+        params = tf.Variable(
+                initial_value= w_init(shape=((3*n_qubits+len_state)*n_layers+3*n_qubits,)),
+                trainable=True,
+                name = "ReUploadingPQCweights"
+            )
+    n_batches = n_episodes//batch_size
     for batch in tqdm(range(n_batches)):
         # # Gather episodes
         # if plot_distribution and (batch==0 or batch/n_batches==0.25 or batch/n_batches==0.5 or batch/n_batches == 0.75 or batch==n_batches-1):
@@ -96,6 +97,8 @@ def run():
         #     probs_avg = np.average(probs, axis=0)
         #     print("the probs at batch {} are {}".format(batch, probs_avg))
         #     pass
+        model = ReUploadingPQC_reduced(qubits = np.arange(n_qubits), n_layers=n_layers,
+                                       n_inputs = len_state, n_actions = n_actions, params= params, RxCnot= RxCnot)
         episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state, max_steps= max_steps, prob_1=prob_1, prob_2=prob_2)
 
         # Group states, actions and returns in numpy arrays
@@ -110,7 +113,7 @@ def run():
         id_action_pairs = np.array([[i, a] for i, a in enumerate(actions)])
 
         # Update model parameters.
-        reinforce_update(states, id_action_pairs, returns, model, ws, optimizers, batch_size=batch_size, eta= eta)
+        params = reinforce_update_reduced(states, id_action_pairs, returns, optimizer, batch_size, eta, params, n_qubits, n_layers, n_actions, RxCnot)
 
         # Store collected rewards
         for ep_rwds in rewards:
@@ -146,10 +149,10 @@ def run():
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
 
             # ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lr{lr}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             
             # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lr{lr}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
             if not os.path.isdir(directory):
                 os.mkdir(directory)
@@ -169,10 +172,10 @@ def run():
 
             # the path to where we save the results. we take the first letter of every _ argument block to determine this path
             #ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lr{lr}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
             # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lr{lr}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
             if not os.path.isdir(directory):
                 os.mkdir(directory)
 
@@ -188,7 +191,7 @@ def run():
             np.save(directory, episode_reward_history)
 
     if print_model_summary:
-        model.summary()
+        print(model.circuit.summary())
 
 
 
@@ -208,9 +211,9 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-    # run() 
-    p = mp.Pool(int(n_cores))
-    res = p.starmap(run, [() for _ in range(n_reps)])
-    p.close()
-    p.join()
+    run() 
+    # p = mp.Pool(int(n_cores))
+    # res = p.starmap(run, [() for _ in range(n_reps)])
+    # p.close()
+    # p.join()
     

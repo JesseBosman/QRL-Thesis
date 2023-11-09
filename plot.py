@@ -109,6 +109,7 @@ def plot_length_from_path(path_folders, labels, smoothing, neps, alpha = 0.1, me
                 dir)[:neps]  # now names episode_rewards, but depending on dir can also be episode_lengths
             counter = 0
             n_episodes = 0
+            # print("max length was {}".format(np.max(episode_lengths)))
             smoothed_episode_lenghts = []
             for episode in episode_lengths:
 
@@ -132,7 +133,6 @@ def plot_length_from_path(path_folders, labels, smoothing, neps, alpha = 0.1, me
         if mean:
             all_data_std = np.std(all_data, axis=0)
             all_data_average = np.average(all_data, axis=0)
-
             plt.plot(X, all_data_average, label=labels[p])
 
             if n_files > 1:
@@ -200,23 +200,50 @@ def plot_from_path_percentage(path_folders, labels, smoothing=1000):
 
 
 # adjust to own paths
-
 if __name__ == '__main__':
-    paths = [   
-        "/lengthsQuantumProbabilityAgent5holes1000000neps6steps/",
+    paths = [
+        "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes2layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/5inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes2layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",  
+        "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/5inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v4-RxCNOT5holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v4-RxCNOT5holes5qubits2layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v4-RxCNOT5holes5qubits3layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v45holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v45holes5qubits2layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-prob10.21-prob20.79-maxsteps6-PQC-v45holes5qubits3layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/"
+        # "lengthsQuantumProbabilityAgent5holes1000000neps6steps0.21428571428571427prob10.7857142857142857prob2/",
+        # "lengthsQuantumProbabilityAgent5holes1000000nepsinfsteps0.21428571428571427prob10.7857142857142857prob2/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes2layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/5inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes2layers2nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/5inp-QFIAHv1-prob10.21428571428571427-prob_20.7857142857142857-maxsteps65holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/"
 
+
+        # "lengthsQuantumProbabilityAgent5holes1000000neps6steps/",
+        # "lengthsQuantumProbabilityAgent5holes1000000nepsinfsteps/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-PQC-v4-RXCNOT5holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-QFIAHv1-PQC-v45holes5qubits1layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/5-inp-QFIAHv1-PQC-v45holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv15holes2layers2node250000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-QFIAHv15holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/5inp-QFIAHv15holes3layers10nodeslr0.001neps250000bsize10gamma1start1anil0.25elu/"
 
         # "lengthsProbabilityAgent10holes1000000neps/",
+        # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits5layersneps1000000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
         # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes1layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
         # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits1layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
         # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits1layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits2layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
-        # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits3layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
-    #  "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes5layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
-        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits5layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/"
-        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits5layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
-        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits5layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/"
-        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits10layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits3layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes5layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits5layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits5layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT10holes10qubits5layersneps500000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits10layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev2-prob10.21-prob20.79-maxsteps1610holes3layers10nodeslr0.001neps500000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/NN/ep_length/2inp-FoxInAHolev2-prob10.21-prob20.79-maxsteps1610holes3layers10nodeslr0.0001neps500000bsize10gamma1start1anil0.25elu/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-FoxInAHolev2-prob10.21-prob20.79-maxsteps16-PQC-v410holes10qubits20layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
         
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v410holes10qubits10layersneps500000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v45holes5qubits1layersneps250000lrin0.1lrvar0.1lrout0.1bsize10gamma1start1anil0.25/",
@@ -241,15 +268,44 @@ if __name__ == '__main__':
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v45holes1layersneps250000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/3-inp-PQC-v35holes1layersneps250000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/",
         # # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v45holes3qubits1layersneps250000lrin0.01lrvar0.001lrout0.01bsize10gamma1start1anil0.25/"
-        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT5holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/"
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-PQC-v4-RxCNOT5holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/",
+        # "/home/s2025396/data1/resultsQRL/PQC/ep_length/2-inp-FoxInAHolev2-prob10.21-prob20.79-maxsteps6-PQC-v4-RxCNOT-noobsweights5holes5qubits1layersneps250000lrin0.01lrvar0.01lrout0.01bsize10gamma1start1anil0.25/"
+
     ]
 
        
     labels = [
-        "Quantum Probability agent 5 holes 6 steps",
-        "Quantum Probability agent 5 holes unbounded"
 
+        # ## QFIAH 5 holes
+        "2 inp NN 2 layers 2 nodes (27 params)",
+        # "5 inp NN 2 layers 2 nodes",
+        "2 inp NN 3 layers 10 nodes (305 params)",
+        # "5 inp NN 3 layers 10 nodes",
+        "2 inp PQC 1 layer RxCnot (17 params)",
+        # "2 inp PQC 2 layers RxCnot (24 params)",
+        "2 inp PQC 3 layers RxCnot (31 params)",
+        "2 inp PQC 1 layer RxRyRz CZ (37 params)",
+        # "2 inp PQC 2 layer RxRyRz CZ (54 params)",
+        "2 inp PQC 3 layer RxRyRz CZ (71 params)"
+
+        # "Probability agent 6 steps",
+        # "Probability agent inf steps",
+        # "2 inp 2 layers 2 nodes",
+        # "5 inp 2 layers 2 nodes",
+        # "2 inp 3 layers 10 nodes",
+        # "5 inp 3 layers 10 nodes"
+        # "Quantum Probability agent 5 holes 6 steps",
+        # "Quantum Probability agent 5 holes unbounded",
+        # "2 inp PQC Rx Cnot 1 layer",
+        # "2 inp PQC RxRyRz Cz 1 layer",
+        # "5 inp PQC RxRyRz Cz 1 layer",
+        # "2 inp NN 2 layers 2 nodes",
+        # "2 inp NN 3 layers 10 nodes",
+        # "5 inp NN 3 layers 10 nodes"
+
+        # FIAH 10 holes
         # "Probability agent",
+        # "PQC RxRyRz CZ 5 layers"
         # "RxRyRz Cz 1 layer lr [0.01, 0.001, 0.01]",
         # # "RxRyRz Cz lr [0.01, 0.001, 0.01]",
         # "Rx Cnot 1 layer lr [0.01, 0.001, 0.01]",
@@ -258,13 +314,17 @@ if __name__ == '__main__':
         # "RxRyRz Cz 1 layer lr [0.01, 0.001, 0.01]",
         # "Rx Cnot 1 layer lr [0.01, 0.001, 0.01]",
         # "Rx Cnot 1 layer lr [0.01, 0.01, 0.01]",
+        # "RxRyRz Cz 3 layers lr [0.01, 0.001, 0.01]",
         # "RxRyRz Cz 5 layers lr [0.01, 0.001, 0.01]",
-        # "RxRyRz Cz 5 layers lr [0.01, 0.01, 0.01]"
+        # "RxRyRz Cz 5 layers lr [0.01, 0.01, 0.01]",
         # "Rx Cnot 5 layers lr [0.01, 0.001, 0.01]",
         # "Rx Cnot 5 layers lr [0.01, 0.01, 0.01]",
-        # "RxRyRz Cz 10 layers lr [0.01, 0.001, 0.01]"
+        # "RxRyRz Cz 10 layers lr [0.01, 0.001, 0.01]",
+        # "NN 3 layers 10 nodes lr 0.001",
+        # "NN 3 layers 10 nodes lr 0.0001",
+        # "RxRyRz Cz 20 layers lr [0.01, 0.001, 0.01]"
 
-        
+        ## FIAH 5 holes
         # # "NN 3 inp 3 layers 3 nodes (44 params)",
         # "NN 3 layers 10 nodes (305 params)",
         # # "NN 3 layers 10 nodes lr 0.0005 (305 params)",
@@ -276,7 +336,9 @@ if __name__ == '__main__':
         # # "NN 2 layers 3 nodes (41 params)",
         # "NN 2 layers 2 nodes (27 params)",
         # "NN 1 layer 2 nodes (21 params)",
-        # "PQC 5 qubits 1 layer Rx Cnot(17 params)"
+        # "PQC 5 qubits 1 layer Rx Cnot(17 params)",
+        # "PQC 5 qubits 1 layer Rx Cnot no obs weights (12 params)"
+
 
 
         

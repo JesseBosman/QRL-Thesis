@@ -14,16 +14,16 @@ plot_probabilities = False
 
 from fox_in_a_hole_gym import FoxInAHolev2, QFIAHv1
 
-
 exp_key = "QuantumProbabilityAgent"
-max_steps = np.inf
+max_steps =6
+prob1= 3/14
+prob2= 11/14
 n_episodes = 1000000
 n_holes = 5
 n_actions = n_holes
 n_reps = 10
 
 averaging_window = 5000
-
 
 def run():
     if exp_key == "ProbabilityAgent":
@@ -42,7 +42,7 @@ def run():
         agent = PickMiddle(n_holes=n_holes)
 
     elif exp_key == "QuantumProbabilityAgent":
-        agent = QuantumProbabilityAgent(n_holes =n_holes, print_hole_prob=plot_probabilities)
+        agent = QuantumProbabilityAgent(n_holes =n_holes, print_hole_prob=plot_probabilities, prob_1=prob1,prob_2=prob2)
 
 
     else:
@@ -56,7 +56,7 @@ def run():
     # Start training the agent
     else:
         pass
-    env = QFIAHv1(n_holes=n_holes, len_state=2, max_steps = max_steps)
+    env = QFIAHv1(n_holes=n_holes, len_state=2, max_steps = max_steps, prob_1=prob1, prob_2=prob2)
     
     episode_reward_history = []
     episode_length_history = []
@@ -92,7 +92,7 @@ def run():
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f'./rewards{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps/'
+        directory = f'./rewards{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2/'
 
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -111,7 +111,7 @@ def run():
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f'./lengths{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps/'
+        directory = f'./lengths{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2/'
 
         if not os.path.isdir(directory):
             os.mkdir(directory)

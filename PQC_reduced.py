@@ -7,6 +7,7 @@ from functools import reduce
 from collections import deque, defaultdict
 import matplotlib.pyplot as plt
 from cirq.contrib.svg import SVGCircuit
+from tfq_custom import CustomPQC, State
 tf.get_logger().setLevel('ERROR')
 
 def one_qubit_rotation(qubit, symbols):
@@ -87,6 +88,7 @@ def generate_circuit(qubits, n_layers, n_inputs, RxCnot=False):
     
     return circuit, list(params.flat), list(inputs.flat)
 
+
 class ReUploadingPQC(tf.keras.layers.Layer):
     """
     Performs the transformation (s_1, ..., s_d) -> (theta_1, ..., theta_N, lmbd[1][1]s_1, ..., lmbd[1][M]s_1,
@@ -97,11 +99,13 @@ class ReUploadingPQC(tf.keras.layers.Layer):
         by the ControlledPQC.
     """
 
-    def __init__(self, qubits, n_layers, n_inputs, observables, activation="linear", name="re-uploading_PQC", RxCnot = False):
+    def __init__(self, qubits, n_layers, n_inputs, n_actions, activation="linear", name="re-uploading_PQC", RxCnot = False):
         super(ReUploadingPQC, self).__init__(name=name)
         self.n_layers = n_layers
         self.n_qubits = len(qubits)
         self.n_inputs = n_inputs
+        self.dim_diff = 2**(self.n_qubits)-n_actions
+        
 
         circuit, theta_symbols, input_symbols = generate_circuit(qubits, n_layers, n_inputs, RxCnot=RxCnot)
 
@@ -118,11 +122,14 @@ class ReUploadingPQC(tf.keras.layers.Layer):
         
         # Define explicit symbol order.
         symbols = [str(symb) for symb in theta_symbols + input_symbols]
+        self.symbols = symbols
         self.indices = tf.constant([symbols.index(a) for a in sorted(symbols)])
         
         self.activation = activation
         self.empty_circuit = tfq.convert_to_tensor([cirq.Circuit()])
-        self.computation_layer = tfq.layers.ControlledPQC(circuit, observables)        
+        self.computation_layer = tfq.layers.State()  
+
+
 
     def call(self, inputs):
         # inputs[0] = encoding data for the state.
@@ -135,36 +142,38 @@ class ReUploadingPQC(tf.keras.layers.Layer):
 
         joined_vars = tf.concat([tiled_up_thetas, squashed_inputs], axis=1)
         joined_vars = tf.gather(joined_vars, self.indices, axis=1)
-
-        
+        # states= self.computation_layer([tiled_up_circuits, joined_vars])
+        # print("states before")
+        # print(states)
+        # states = states[:,:-self.dim_diff].to_tensor()
+        # print("states after")
+        # print(states)
+        # return states
         return self.computation_layer([tiled_up_circuits, joined_vars])
+    
+
     
 class ObservableWeights(tf.keras.layers.Layer):
     def __init__(self, output_dim):
         super(ObservableWeights, self).__init__()
+        self.output_dim= output_dim
         self.w = tf.Variable(
             initial_value= np.random.normal(scale= 0.01, size = output_dim), dtype="float32",
             trainable=True, name="obs-weights")
 
     def call(self, inputs):
-        x = tf.multiply(inputs, self.w)
-        return x
-   
+        return tf.multiply(inputs, self.w)
 
 def generate_model_policy(n_qubits, n_layers, n_actions, n_inputs, beta, RxCnot = False):
     """Generates a Keras model for a data re-uploading PQC policy."""
     qubits = cirq.GridQubit.rect(1, n_qubits)
-    ops = [cirq.Z(q) for q in qubits]
-    # ops = [(cirq.I(q)+cirq.Z(q))/2 for q in qubits]
-    # if n_actions!= n_qubits:
-    #     ops.extend([cirq.Z(qubits[i])*cirq.Z(qubits[i+1]) for i in range(int(n_actions - n_qubits))])
-    # ops.extend([cirq.Z(qubits[0])*cirq.Z(qubits[n_qubits-1]), cirq.Z(qubits[1])*cirq.Z(qubits[n_qubits-1])])
-    observables = ops # Z for every qubit
 
     input_tensor = tf.keras.Input(shape=(n_inputs, ), dtype=tf.dtypes.float32, name='input')
-    re_uploading_pqc = ReUploadingPQC(qubits, n_layers, n_inputs, observables, RxCnot= RxCnot)([input_tensor])
+    re_uploading_pqc = ReUploadingPQC(qubits, n_layers, n_inputs, n_actions, RxCnot= RxCnot)([input_tensor])
     process = tf.keras.Sequential([
-        ObservableWeights(n_actions),
+        # tfq.layers.State(),
+        tf.keras.layers.Lambda(lambda x: tf.cast(x*tf.math.conj(x), tf.float32)),
+        # ObservableWeights(n_actions),
         tf.keras.layers.Lambda(lambda x: x * beta),
         tf.keras.layers.Softmax()
     ], name="observables-policy")
@@ -194,4 +203,6 @@ def reinforce_update(states, actions, returns, model, ws, optimizers, batch_size
         optimizer.apply_gradients([(grads[w], model.trainable_variables[w])])
 
 
-model = generate_model_policy(n_qubits = 5, n_layers =1, n_actions= 5, n_inputs = 2, beta = 1)
+model = generate_model_policy(n_qubits = 2, n_layers =1, n_actions= 4, n_inputs = 2, beta = 1)
+
+

@@ -94,29 +94,32 @@ class PickMiddle():
 
 
 class QuantumProbabilityAgent():
-    def __init__(self, n_holes, print_hole_prob):
+    def __init__(self, n_holes, print_hole_prob, prob_1, prob_2):
+        split_1= prob_1**(0.5)
+        split_2= prob_2**(0.5)
         self.n_holes = n_holes
         self.print_holeprob = print_hole_prob
         self.action = None
         self.current_policy_sequence = []
         self.longest_policy_sequence = []
-        if n_holes == 5:
-            self.T_odd = np.array([[0, 2**(-0.5), 0, 0, 0],
-                                [1, 0, 2**(-0.5), 0, 0],
-                                [0, 2**(-0.5), 0, 2**(-0.5), 0],
-                                [0, 0, 2**(-0.5), 0, 1],
-                                [0, 0, 0, 2**(-0.5), 0]])
-            
-            self.T_even = np.array([[0, 2**(-0.5), 0, 0, 0],
-                                [-1, 0, 2**(-0.5), 0, 0],
-                                [0, -2**(-0.5), 0, 2**(-0.5), 0],
-                                [0, 0, -2**(-0.5), 0, 1],
-                                [0, 0, 0, -2**(-0.5), 0]])
+        T_odd = np.zeros(shape= (n_holes, n_holes))
+        T_even = np.zeros(shape= (n_holes, n_holes))
 
-        else:
-            raise ValueError
+        for i in range(n_holes -2):
+            T_odd[i,i+1]= split_1
+            T_odd[i+2, i+1]= split_2
+
+            T_even[i, i+1]= split_2
+            T_even[i+2, i+1]= -1*split_1
         
-        self.possible_fox_states= np.eye(self.n_holes)
+        T_odd[1,0]=1
+        T_odd[-2,-1]= 1 
+        T_even[1,0]=-1
+        T_even[-2,-1]= 1
+        self.T_odd = T_odd
+        self.T_even = T_even
+        
+        self.possible_fox_states= np.eye(n_holes)
         self.move_counter = 0
     
     def pick_hole(self):

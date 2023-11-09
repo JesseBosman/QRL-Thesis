@@ -3,15 +3,15 @@
 """
 
 import tensorflow as tf
-import tensorflow_quantum as tfq
+# import tensorflow_quantum as tfq
 
-import cirq, sympy
+# import cirq, sympy
 # import gymnasium as gym
 import numpy as np
 from functools import reduce
 from collections import deque, defaultdict
 import matplotlib.pyplot as plt
-from cirq.contrib.svg import SVGCircuit
+# from cirq.contrib.svg import SVGCircuit
 
 from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded, QFIAHv1
 
@@ -21,7 +21,7 @@ class reinforce_agent():
     self.brain = None
     pass
 
-  def gather_episodes(self,state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state):
+  def gather_episodes(self,state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state, max_steps, prob_1, prob_2):
       """Interact with environment in batched fashion."""
 
       trajectories = [defaultdict(list) for _ in range(batch_size)]
@@ -36,7 +36,10 @@ class reinforce_agent():
          envs = [FoxInAHoleBounded(n_holes=n_holes) for _ in range(batch_size)]
 
       elif env_name.lower() == "qfiahv1":
-         envs = [QFIAHv1(n_holes=n_holes, len_state= len_state) for _ in range(batch_size)]
+         envs = [QFIAHv1(n_holes, len_state, max_steps, prob_1, prob_2, tunneling_prob= 0) for _ in range(batch_size)]
+      
+      elif env_name.lower()=="qfiahv2":
+         envs = [QFIAHv1(n_holes, len_state, max_steps, prob_1, prob_2, tunneling_prob= 0.2) for _ in range(batch_size)]
 
       else:
          raise KeyError
@@ -54,8 +57,10 @@ class reinforce_agent():
 
           # Compute policy for all unfinished envs in parallel
           states = tf.convert_to_tensor(normalized_states)
+         #  print("states")
+         #  print(states)
+          
           action_probs = model(states)
-
           # Store action and transition all environments to the next state
           states = [None for i in range(batch_size)]
           for i, policy in zip(unfinished_ids, action_probs.numpy()):

@@ -16,7 +16,8 @@ CWD=$(pwd)
 echo "This job was submitted from $SLURM_SUBMIT_DIR and i am currently in $CWD"
 
 echo "[$SHELL] ## Run script"
-source /home/s2025396/tfqenv/bin/activate
+deactivate
+source /home/s2025396/tfqenv3/bin/activate
 python3 main_mathagents.py
 echo "[$SHELL] ## Finished"
 

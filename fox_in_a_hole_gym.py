@@ -1,7 +1,7 @@
 import numpy as np
-import tensorflow as tf
-import tensorflow_quantum as tfq
-import cirq
+# import tensorflow as tf
+# import tensorflow_quantum as tfq
+# import cirq
 
 class FoxInAHole():
     def __init__(self, n_holes=5, env_config={}):
@@ -251,26 +251,48 @@ class FoxInAHoleBounded():
         return self.state, reward, done, {}
     
 class QFIAHv1():
-    def __init__(self, n_holes, len_state, max_steps=None):
+    """
+    Class for a quantum version of FoxInAHole, supporting the superposition of the fox across holes.
+    """
+    def __init__(self, n_holes, len_state, max_steps=None, prob_1= 0.5, prob_2= 0.5):
+        split_1 = prob_1**(0.5)
+        split_2 = prob_2**(0.5)
         self.len_state = len_state
         self.n_holes= n_holes
         if max_steps ==None:
             self.max_steps = 2*(n_holes-2)
         else:
             self.max_steps = max_steps
-        self.T_odd = np.array([[0, 2**(-0.5), 0, 0, 0],
-                               [1, 0, 2**(-0.5), 0, 0],
-                               [0, 2**(-0.5), 0, 2**(-0.5), 0],
-                               [0, 0, 2**(-0.5), 0, 1],
-                               [0, 0, 0, 2**(-0.5), 0]])
+        # if n_holes ==5:
+        #     self.T_odd = np.array([[0, split_1, 0, 0, 0],
+        #                         [1, 0, split_1, 0, 0],
+        #                         [0, split_2, 0, split_1, 0],
+        #                         [0, 0, split_2, 0, 1],
+        #                         [0, 0, 0, split_2, 0]])
+            
+        #     self.T_even = np.array([[0, split_1, 0, 0, 0],
+        #                         [-1, 0, split_1, 0, 0],
+        #                         [0, -1*split_2, 0, split_1, 0],
+        #                         [0, 0, -1*split_2, 0, 1],
+        #                         [0, 0, 0, -1*split_2, 0]])
         
-        self.T_even = np.array([[0, 2**(-0.5), 0, 0, 0],
-                               [-1, 0, 2**(-0.5), 0, 0],
-                               [0, -2**(-0.5), 0, 2**(-0.5), 0],
-                               [0, 0, -2**(-0.5), 0, 1],
-                               [0, 0, 0, -2**(-0.5), 0]])
+       
+        T_odd = np.zeros(shape= (n_holes, n_holes))
+        T_even = np.zeros(shape= (n_holes, n_holes))
 
-        pass
+        for i in range(n_holes -2):
+            T_odd[i,i+1]= split_1
+            T_odd[i+2, i+1]= split_2
+
+            T_even[i, i+1]= split_2
+            T_even[i+2, i+1]= -1*split_1
+        
+        T_odd[1,0]=1
+        T_odd[-2,-1]= 1 
+        T_even[1,0]=-1
+        T_even[-2,-1]= 1
+        self.T_odd = T_odd
+        self.T_even = T_even        
 
     def reset(self):
 
@@ -320,4 +342,126 @@ class QFIAHv1():
                 self.move_fox()
 
         return self.game_state, reward, done, {}
+    
+
+class QFIAHv1():
+    """
+    Class for a quantum version of FoxInAHole, supporting the superposition of the fox across holes and 'tunneling'.
+    """
+    def __init__(self, n_holes, len_state, max_steps=None, prob_1= 0.5, prob_2= 0.5, tunneling_prob=0.2):
+        split_1 = (prob_1*(1-tunneling_prob))**(0.5)
+        split_2 = (prob_2*(1-tunneling_prob))**(0.5)
+        tunnel_split_1 = (prob_1*tunneling_prob)**(0.5)
+        tunnel_split_2 = (prob_2*tunneling_prob)**(0.5)
+        self.len_state = len_state
+        self.n_holes= n_holes
+        if max_steps ==None:
+            self.max_steps = 2*(n_holes-2)
+        else:
+            self.max_steps = max_steps
+
+        T_odd = np.zeros(shape= (n_holes, n_holes))
+        T_even = np.zeros(shape= (n_holes, n_holes))
+
+        for i in range(n_holes -2):
+            T_odd[i,i+1]= split_1
+            T_odd[i+2, i+1]= split_2
+            T_even[i, i+1]= split_2
+            T_even[i+2, i+1]= -1*split_1
+
+            try:
+                T_odd[i,i+2]= tunnel_split_1
+            except:
+                pass
+            try:
+                T_odd[i+2, i]= tunnel_split_2
+            except:
+                pass
+
+            try:
+                T_even[i, i+2]= tunnel_split_2
+            except:
+                pass
+
+            try:
+                T_even[i+2, i]= -1*tunnel_split_1
+            
+            except:
+                pass
         
+        T_odd[-1,-2] = prob_2**(0.5)
+        T_odd[0,1] = prob_1**(0.5)
+
+        T_even[-1,-2] = -prob_1**(0.5)
+        T_even[0,1] = prob_2**(0.5)
+      
+        # Hier nog tunneling aanpassen!
+
+        T_odd[1,0]=(1-tunneling_prob)
+        T_odd[2,0]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_odd[-2,-1]= (1-tunneling_prob)
+        T_odd[-3,-1]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_even[1,0]=-(1-tunneling_prob)
+        T_even[2,0]= -((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_even[-2,-1]= (1-tunneling_prob)
+        T_even[-3,-1]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+
+        T_odd[-1,0]= tunneling_prob**(0.5)
+        T_odd[0,-1]= tunneling_prob**(0.5)
+
+        T_even[-1,0]= tunneling_prob**(0.5)
+        T_even[0,-1]= -tunneling_prob**(0.5)
+
+        self.T_odd = T_odd
+        self.T_even = T_even        
+        
+
+    def reset(self):
+
+        initial_hole = np.random.randint(0,5,1)
+        self.fox_state= np.zeros(self.n_holes)
+        self.fox_state[initial_hole]=1
+        self.game_state = np.ones(self.len_state)*-1
+        self.move_counter = 0
+
+
+        return self.game_state
+
+    def move_fox(self):
+        fox_state =self.fox_state
+        if self.move_counter%2==0:
+            fox_state= np.matmul(self.T_even, fox_state)
+        else:
+            fox_state= np.matmul(self.T_odd, fox_state)
+        
+        norm = np.linalg.norm(fox_state)
+        self.fox_state = fox_state/norm
+        
+        self.move_counter+=1
+        
+        
+    def step(self, action):
+        game_state = np.roll(self.game_state, 1)
+        game_state[0]=action
+        self.game_state = game_state
+        prob_correct = self.fox_state[action]**2
+        coin = np.random.random(1)
+
+        if prob_correct>coin:
+            reward = 1
+            done = True
+        
+        else:
+            reward = -1
+            if self.move_counter== self.max_steps-1:
+                done = True
+            else:
+                done = False
+                fox_state = self.fox_state
+                fox_state[action]= 0
+                norm = np.linalg.norm(fox_state)
+                self.fox_state= fox_state/norm
+                self.move_fox()
+
+        return self.game_state, reward, done, {}
+

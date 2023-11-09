@@ -5,8 +5,8 @@
 #SBATCH --mail-type="ALL"
 #SBATCH --mem-per-cpu=1000M
 
-#SBATCH --partition="cpu-short"
-#SBATCH --time=02:00:00
+#SBATCH --partition="cpu-medium"
+#SBATCH --time=08:00:00
 #SBATCH --ntasks=1
 #SBATCH	--cpus-per-task=10
 
@@ -16,7 +16,8 @@ CWD=$(pwd)
 echo "This job was submitted from $SLURM_SUBMIT_DIR and i am currently in $CWD"
 
 echo "[$SHELL] ## Run script"
-source /home/s2025396/tfqenv/bin/activate
+deactivate
+source /home/s2025396/tfqenv3/bin/activate
 python3 main_NN.py
 echo "[$SHELL] ## Finished"
 

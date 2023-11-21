@@ -4,6 +4,7 @@ from tqdm import tqdm
 import os
 import datetime
 import multiprocessing as mp
+import argparse
 
 
 # settings for writing the files, plotting
@@ -12,38 +13,28 @@ print_avg = False
 save_data = True
 print_model_summary = True
 print_policy = True
+averaging_window = 5000
 
-env_name = "FoxInAHolev2"
-len_state = 2
-exp_key = f"{len_state}inp-{env_name}"
-n_episodes = 500000
-n_holes = 5
-batch_size= 10
-n_actions = n_holes
 state_bounds = 1
 gamma = 1
-input_dim = len_state
-learning_rate = 0.0005
-averaging_window = 5000
-n_hidden_layers=3
-n_nodes_per_layer= 10
-activation = 'elu'
-anil= 0.25
+anil = 0.25
 start = 1
 
 save_length = True
 save_reward = True
-
-n_reps = 10
-
-print("Hyperparameters are:")
-print("n layers {} n nodes {} lr {}".format(n_hidden_layers, n_nodes_per_layer, learning_rate))
+# print("Hyperparameters are:")
+# print("n layers {} n nodes {} lr {}".format(n_hidden_layers, n_nodes_per_layer, learning_rate))
 
 
 
 # Start training the agent
 
-def run():
+def run(len_state=2, prob_1=3/14, prob_2=11/14, n_episodes = 250000, n_holes = 5, max_steps = 6, batch_size = 10, env_name="FoxInAHolev2",
+        learning_rate = 0.001, n_hidden_layers = 2, n_nodes_per_layer = 2, exp_key = "default"):
+    
+    input_dim = len_state
+    activation = 'elu'
+    n_actions = n_holes
     import tensorflow as tf
     from REINFORCE import reinforce_agent
     from NN import PolicyModel
@@ -55,7 +46,7 @@ def run():
     for batch in tqdm(range(n_episodes // batch_size)):
         # Gather episodes
         
-        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state=len_state)
+        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state=len_state, max_steps = max_steps, prob_1=prob_1, prob_2=prob_2)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])
@@ -143,25 +134,61 @@ def run():
     if print_model_summary:
         model.model.summary()
 
-try:
-    n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
-    print("cores provided are: "+f"{n_cores}")
-    n_cores = int(n_cores)
 
-except:
-    
-    n_cores = n_reps
-
-print("The number of cores available is {}".format(n_cores))
 
 def test_run():
     for i in tqdm(range(1000)):
         x = i*i
 
-if __name__ == '__main__':     
-    # run()  
+if __name__ == '__main__':   
+    argparser = argparse.ArgumentParser()  
+    argparser.add_argument("--len_state", "-ls", type = int, default= 2, help="The length of the input state.")
+    argparser.add_argument("--prob_1", "-p1", type = float, default= 3/14, help="Probability of split to the right for QFIAH.")
+    argparser.add_argument("--n_episodes", "-ne", type = int, default= 250000, help="Amount of episodes to train for.")
+    argparser.add_argument("--n_holes", "-nh", type = int, default= 5, help="The amount of holes in the game.")
+    argparser.add_argument("--max_steps", "-ms", type = int, default= 6, help="The amount of steps allowed within an episode.")
+    argparser.add_argument("--batch_size", "-bs", type = int, default= 10, help="The batch size.")
+    argparser.add_argument("--env_name", "-en", type = str, default= "FoxInAHolev2", help="The environment/game version.")
+    argparser.add_argument("--learning_rate", "-lr", type = float, default= 0.001, help="The learning rate.")
+    argparser.add_argument("--n_hidden_layers", "-nhl", type = int, default= 2, help="The amount of hidden layers.")
+    argparser.add_argument("--n_nodes_per_layer", "-nnpl", type = int, default= 2, help="The amount of nodes per hidden layer.")
+    argparser.add_argument("--n_reps","-nr", type = int, default= 10, help = "The amount of repetitions to run.")
+
+    args = argparser.parse_args()
+    len_state = args.len_state
+    prob_1= args.prob_1
+    prob_2= 1-prob_1
+    n_episodes = args.n_episodes
+    n_holes = args.n_holes
+    max_steps = args.max_steps
+    batch_size = args.batch_size
+    env_name = args.env_name
+    learning_rate = args.learning_rate
+    n_hidden_layers = args.n_hidden_layers
+    n_nodes_per_layer = args.n_nodes_per_layer
+    n_reps = args.n_reps
+ 
+    try:
+        n_cores = os.environ['SLURM_JOB_CPUS_PER_NODE']
+        print("cores provided are: "+f"{n_cores}")
+        n_cores = int(n_cores)
+
+    except:
+        
+        n_cores = n_reps
+
+    print("The number of cores available is {}".format(n_cores))
+    
+    if env_name.lower()== 'qfiahv1'or 'qfiahv2':
+
+        exp_key = f"{len_state}inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}"
+    else:
+        exp_key = f"{len_state}inp-{env_name}-maxsteps{max_steps}"
+
+    print("(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, learning_rate, n_hidden_layers, n_nodes_per_layer, exp_key)")
+    print(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, learning_rate, n_hidden_layers, n_nodes_per_layer, exp_key)
     p = mp.Pool(int(n_cores))
-    res = p.starmap(run, [() for _ in range(n_reps)])
+    res = p.starmap(run, [(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, learning_rate, n_hidden_layers, n_nodes_per_layer, exp_key) for _ in range(n_reps)])
     p.close()
     p.join()
     

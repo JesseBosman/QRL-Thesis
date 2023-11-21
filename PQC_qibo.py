@@ -175,8 +175,10 @@ def reinforce_update_reduced(states, actions, returns, optimizer, batch_size, et
     returns = tf.convert_to_tensor(returns)
     qubits = np.arange(n_qubits)
     with tf.GradientTape() as tape:
+        tape.watch(params)
         model = ReUploadingPQC_reduced(qubits, n_layers, n_inputs=2, n_actions = n_actions, params = params, RxCnot = RxCnot)
         loss = 0
+        
         for i, state in enumerate(states):
             state = tf.convert_to_tensor(state)
             logits = model(state)
@@ -188,3 +190,4 @@ def reinforce_update_reduced(states, actions, returns, optimizer, batch_size, et
     grads = tape.gradient(loss, params)
     optimizer.apply_gradients(zip([grads],[params]))
     return params
+

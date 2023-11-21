@@ -84,12 +84,13 @@ class FoxInAHole():
         return self.state, reward, done, {}
             
 class FoxInAHolev2():
-    def __init__(self, n_holes=5, env_config={}, len_state = 4):
+    def __init__(self, n_holes=5, max_steps= 6, len_state = 4):
         self.n_holes = n_holes
         self.hole_nr = None
         self.state = None
         self.guess_counter = 0
         self.len_state = len_state
+        self.max_steps = max_steps
         #super.__init__()
 
     def reset(self):
@@ -138,7 +139,7 @@ class FoxInAHolev2():
             self.state = state
             done = True
         
-        elif self.guess_counter == 2*self.n_holes-5:
+        elif self.guess_counter == self.max_steps-1:
             reward = -1
             state = np.roll(self.state, 1)
             state[0]=action
@@ -158,17 +159,6 @@ class FoxInAHolev2():
 
         return self.state, reward, done, {}
     
-    def unbounded_step(self, action):
-        if action == self.hole_nr:
-            reward = 1
-            done = True
-        
-        else:
-            reward = -1
-            done = False
-            self.move_fox()
-        
-        return self.state, reward, done, {}
     
 class FoxInAHoleBounded():
     def __init__(self, n_holes=5, env_config={}, len_state = None):
@@ -291,6 +281,7 @@ class QFIAHv1():
         T_odd[-2,-1]= 1 
         T_even[1,0]=-1
         T_even[-2,-1]= 1
+
         self.T_odd = T_odd
         self.T_even = T_even        
 
@@ -344,7 +335,7 @@ class QFIAHv1():
         return self.game_state, reward, done, {}
     
 
-class QFIAHv1():
+class QFIAHv2():
     """
     Class for a quantum version of FoxInAHole, supporting the superposition of the fox across holes and 'tunneling'.
     """
@@ -465,3 +456,5 @@ class QFIAHv1():
 
         return self.game_state, reward, done, {}
 
+env1 = QFIAHv1(5, 2, 6, 3/14, 11/14)
+env2 = QFIAHv2(5, 2, 6, 3/14, 11/14, 0.2)

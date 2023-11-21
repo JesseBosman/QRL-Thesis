@@ -4,7 +4,7 @@ from tqdm import tqdm
 import datetime
 import os
 import multiprocessing as mp
-from itertools import combinations
+
 
 # settings for writing the files, plotting
 plotting = False
@@ -15,7 +15,7 @@ print_policy = True
 plot_distribution = False
 save_length = True
 save_reward = True
-RxCnot = False
+RxCnot = True
 
 env_name = "FoxInAHolev2"
 len_state = 2
@@ -33,6 +33,8 @@ gamma = 1
 input_dim = len_state
 averaging_window = 5000
 
+
+
 if RxCnot:
     if env_name.lower() == 'qfiahv1':
         exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-red_PQC-RxCNOT"
@@ -45,7 +47,7 @@ else:
         exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-red_PQC"
     
     else:
-        exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-red_PQC-RxCNOT"
+        exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-red_PQC"
 
 anil= 0.25
 start = 1
@@ -70,6 +72,7 @@ def run():
     from PQC_qibo import ReUploadingPQC_reduced, reinforce_update_reduced
     import tensorflow as tf
     agent = reinforce_agent(batch_size=batch_size)
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
     episode_reward_history = []
     episode_length_history = []
@@ -89,31 +92,46 @@ def run():
                 trainable=True,
                 name = "ReUploadingPQCweights"
             )
+    
     n_batches = n_episodes//batch_size
+    
     for batch in tqdm(range(n_batches)):
-        # # Gather episodes
-        # if plot_distribution and (batch==0 or batch/n_batches==0.25 or batch/n_batches==0.5 or batch/n_batches == 0.75 or batch==n_batches-1):
-        #     probs = model(possible_states)
-        #     probs_avg = np.average(probs, axis=0)
-        #     print("the probs at batch {} are {}".format(batch, probs_avg))
-        #     pass
-        model = ReUploadingPQC_reduced(qubits = np.arange(n_qubits), n_layers=n_layers,
-                                       n_inputs = len_state, n_actions = n_actions, params= params, RxCnot= RxCnot)
-        episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state, max_steps= max_steps, prob_1=prob_1, prob_2=prob_2)
+        with tf.GradientTape() as tape:
+            # # Gather episodes
 
-        # Group states, actions and returns in numpy arrays
-        states = np.concatenate([ep['states'] for ep in episodes])
-        actions = np.concatenate([ep['actions'] for ep in episodes])
-        rewards = [ep['rewards'] for ep in episodes]
-        returns = np.concatenate([agent.compute_returns(ep_rwds, gamma) for ep_rwds in rewards])
+            model = ReUploadingPQC_reduced(qubits = np.arange(n_qubits), n_layers=n_layers,
+                                        n_inputs = len_state, n_actions = n_actions, params= params, RxCnot= RxCnot)
+            episodes = agent.gather_episodes(state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state, max_steps= max_steps, prob_1=prob_1, prob_2=prob_2)
 
-        returns = np.array(returns, dtype=np.float32)
+            # Group states, actions and returns in numpy arrays
+            states = np.concatenate([ep['states'] for ep in episodes])
+            actions = np.concatenate([ep['actions'] for ep in episodes])
+            rewards = [ep['rewards'] for ep in episodes]
+            returns = np.concatenate([agent.compute_returns(ep_rwds, gamma) for ep_rwds in rewards])
 
-        eta = max(start*(1-(batch*batch_size)/(n_episodes*anil)), 0)
-        id_action_pairs = np.array([[i, a] for i, a in enumerate(actions)])
+            returns = np.array(returns, dtype=np.float32)
 
-        # Update model parameters.
-        params = reinforce_update_reduced(states, id_action_pairs, returns, optimizer, batch_size, eta, params, n_qubits, n_layers, n_actions, RxCnot)
+            eta = max(start*(1-(batch*batch_size)/(n_episodes*anil)), 0)
+            id_action_pairs = np.array([[i, a] for i, a in enumerate(actions)])
+
+            actions = tf.convert_to_tensor(id_action_pairs)
+            returns = tf.convert_to_tensor(returns)
+    
+        
+            loss = 0
+            for i, state in enumerate(states):
+                state = tf.convert_to_tensor(state)
+                logits = model(state)
+                entropy_loss = -1*tf.math.reduce_sum(tf.math.multiply(logits, tf.math.log(logits)), axis=1)
+                p_actions = logits[0,actions[i,1]]
+                log_probs = tf.math.log(p_actions)
+                loss += (-log_probs * returns[i] - eta* entropy_loss)/ batch_size
+        
+        grads = tape.gradient(loss, params)
+        optimizer.apply_gradients(zip([grads],[params]))
+            
+            # Update model parameters.
+            # params = reinforce_update_reduced(states, id_action_pairs, returns, optimizer, batch_size, eta, params, n_qubits, n_layers, n_actions, RxCnot)
 
         # Store collected rewards
         for ep_rwds in rewards:
@@ -211,7 +229,7 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-    run() 
+    run()
     # p = mp.Pool(int(n_cores))
     # res = p.starmap(run, [() for _ in range(n_reps)])
     # p.close()

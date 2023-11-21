@@ -13,7 +13,7 @@ from collections import deque, defaultdict
 import matplotlib.pyplot as plt
 # from cirq.contrib.svg import SVGCircuit
 
-from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded, QFIAHv1, QFIAHv2
+from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded, QFIAHv1
 
 class reinforce_agent():
   def __init__(self, batch_size):
@@ -30,16 +30,16 @@ class reinforce_agent():
          envs = [FoxInAHole(n_holes=n_holes) for _ in range(batch_size)]
         
       elif env_name.lower()=="foxinaholev2":
-         envs = [FoxInAHolev2(n_holes=n_holes, max_steps = max_steps, len_state=len_state) for _ in range(batch_size)]
+         envs = [FoxInAHolev2(n_holes=n_holes, len_state=len_state) for _ in range(batch_size)]
 
       elif env_name.lower()=="foxinaholebounded":
          envs = [FoxInAHoleBounded(n_holes=n_holes) for _ in range(batch_size)]
 
       elif env_name.lower() == "qfiahv1":
-         envs = [QFIAHv1(n_holes, len_state, max_steps, prob_1, prob_2) for _ in range(batch_size)]
+         envs = [QFIAHv1(n_holes, len_state, max_steps, prob_1, prob_2, tunneling_prob= 0) for _ in range(batch_size)]
       
       elif env_name.lower()=="qfiahv2":
-         envs = [QFIAHv2(n_holes, len_state, max_steps, prob_1, prob_2, tunneling_prob= 0.2) for _ in range(batch_size)]
+         envs = [QFIAHv1(n_holes, len_state, max_steps, prob_1, prob_2, tunneling_prob= 0.2) for _ in range(batch_size)]
 
       else:
          raise KeyError
@@ -48,26 +48,32 @@ class reinforce_agent():
       states = [e.reset() for e in envs]
 
       while not all(done):
-          unfinished_ids = [i for i in range(batch_size) if not done[i]]
-          normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
+         unfinished_ids = [i for i in range(batch_size) if not done[i]]
+         normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
         #   normalized_states = [s for i, s in enumerate(states) if not done[i]]
 
-          for i, state in zip(unfinished_ids, normalized_states):
-              trajectories[i]['states'].append(state)
+         for i, state in zip(unfinished_ids, normalized_states):
+            trajectories[i]['states'].append(state)
 
           # Compute policy for all unfinished envs in parallel
-          states = tf.convert_to_tensor(normalized_states)
+         states = tf.convert_to_tensor(normalized_states)
          #  print("states")
          #  print(states)
-          
-          action_probs = model(states)
+         action_probs = []
+         for state in states:
+           
+           action_probs.append(model(state))
           # Store action and transition all environments to the next state
-          states = [None for i in range(batch_size)]
-          for i, policy in zip(unfinished_ids, action_probs.numpy()):
-              action = np.random.choice(n_actions, p=policy)
-              states[i], reward, done[i], _ = envs[i].step(action) 
-              trajectories[i]['actions'].append(action)
-              trajectories[i]['rewards'].append(reward)
+         
+         action_probs = tf.reshape(action_probs, (len(unfinished_ids), n_actions))
+         # action_probs = model(states)
+         
+         states = [None for i in range(batch_size)]
+         for i, policy in zip(unfinished_ids, action_probs.numpy()):
+            action = np.random.choice(n_actions, p=policy)
+            states[i], reward, done[i], _ = envs[i].step(action) 
+            trajectories[i]['actions'].append(action)
+            trajectories[i]['rewards'].append(reward)
 
       return trajectories
 

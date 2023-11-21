@@ -54,7 +54,7 @@ start = 1
 
 lr = 0.01
 
-n_reps = 10
+n_reps = 9
 
 print("Hyperparameters are:")
 print("lr: {}".format(lr))
@@ -229,9 +229,9 @@ def test_run():
         x = i*i
 
 if __name__ == '__main__':     
-    run()
-    # p = mp.Pool(int(n_cores))
-    # res = p.starmap(run, [() for _ in range(n_reps)])
-    # p.close()
-    # p.join()
+    # run()
+    p = mp.Pool(int(n_cores))
+    res = p.starmap(run, [() for _ in range(n_reps)])
+    p.close()
+    p.join()
     

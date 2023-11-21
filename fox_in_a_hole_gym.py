@@ -84,6 +84,9 @@ class FoxInAHole():
         return self.state, reward, done, {}
             
 class FoxInAHolev2():
+    """
+    Class object for the Fox in hole game. The amount of holes, the max game length and the length of the input state are all adjustable.
+    """
     def __init__(self, n_holes=5, max_steps= 6, len_state = 4):
         self.n_holes = n_holes
         self.hole_nr = None
@@ -91,17 +94,22 @@ class FoxInAHolev2():
         self.guess_counter = 0
         self.len_state = len_state
         self.max_steps = max_steps
-        #super.__init__()
+
 
     def reset(self):
+        """
+        Resets the environment.
+        """
         # reset the environment to initial random state
         self.hole_nr = np.random.randint(low=0,high=self.n_holes, size= 1)
         self.state = -1*np.ones(int(self.len_state)) #n previous picks encoding
-        # self.state = -1*np.ones(int(self.n_holes)) 
         self.guess_counter = 0
         return self.state
     
     def move_fox(self):
+        """
+        Moves the fox randomly to a hole either to the right or to the left.
+        """
         max_hole_nr = self.n_holes-1
         hole_nr = self.hole_nr
         if hole_nr < max_hole_nr and hole_nr > 0:
@@ -127,8 +135,10 @@ class FoxInAHolev2():
             actions (int): the number of the hole to check for the fox
 
         Returns:
-            observation (np.array): numpy array with the observation according to the encoding (0 for no fox, 1 for maybe fox, 2 for fox)
-            reward (int): the reward for the guess
+            state (np.array): numpy array with the last two made guesses (inlcuding the guess made with this functions call).
+            reward (int): the reward for the guess.
+            done (bool): True if the game is finished, False if not.
+            {} (?): Ignore this, its a remnant of the gym environment guidelines. 
 
         """
 
@@ -455,6 +465,3 @@ class QFIAHv2():
                 self.move_fox()
 
         return self.game_state, reward, done, {}
-
-env1 = QFIAHv1(5, 2, 6, 3/14, 11/14)
-env2 = QFIAHv2(5, 2, 6, 3/14, 11/14, 0.2)

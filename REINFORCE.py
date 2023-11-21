@@ -18,7 +18,7 @@ from fox_in_a_hole_gym import FoxInAHole, FoxInAHolev2, FoxInAHoleBounded, QFIAH
 class reinforce_agent():
   def __init__(self, batch_size):
     self.batch_size=batch_size
-    self.brain = None
+    
     pass
 
   def gather_episodes(self,state_bounds, n_holes, n_actions, model, batch_size, env_name, len_state, max_steps, prob_1, prob_2):
@@ -50,16 +50,12 @@ class reinforce_agent():
       while not all(done):
           unfinished_ids = [i for i in range(batch_size) if not done[i]]
           normalized_states = [s/state_bounds for i, s in enumerate(states) if not done[i]]
-        #   normalized_states = [s for i, s in enumerate(states) if not done[i]]
+
 
           for i, state in zip(unfinished_ids, normalized_states):
               trajectories[i]['states'].append(state)
 
           # Compute policy for all unfinished envs in parallel
-          states = tf.convert_to_tensor(normalized_states)
-         #  print("states")
-         #  print(states)
-          
           action_probs = model(states)
           # Store action and transition all environments to the next state
           states = [None for i in range(batch_size)]

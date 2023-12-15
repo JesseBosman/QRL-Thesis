@@ -79,7 +79,6 @@ def generate_circuit(qubits, n_layers, n_inputs, RxCnot=False):
                 
         # Last varitional layer
         circuit.add(one_qubit_rx(q) for i,q in enumerate(qubits))
-        print("Using RxCnot configuration")
     
     else:
         for l in range(n_layers):

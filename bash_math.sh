@@ -6,7 +6,7 @@
 #SBATCH --mem-per-cpu=1000M
 
 #SBATCH --partition="cpu-short"
-#SBATCH --time=00:30:00
+#SBATCH --time=00:50:00
 #SBATCH --ntasks=1
 #SBATCH	--cpus-per-task=10
 

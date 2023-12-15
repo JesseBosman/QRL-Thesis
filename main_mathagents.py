@@ -12,14 +12,16 @@ print_avg = False
 save_data = True
 plot_probabilities = False
 
-from fox_in_a_hole_gym import FoxInAHolev2, QFIAHv1
+from fox_in_a_hole_gym import FoxInAHolev2, QFIAHv1, QFIAHv2
 
-exp_key = "QuantumProbabilityAgent"
-max_steps =6
+exp_key = "ProbabilityAgent"
+env_name = "FoxInAHolev2"
+max_steps = 16
 prob1= 3/14
 prob2= 11/14
-n_episodes = 1000000
-n_holes = 5
+tunneling_prob= 0
+n_episodes =1000000
+n_holes = 10
 n_actions = n_holes
 n_reps = 10
 
@@ -42,7 +44,7 @@ def run():
         agent = PickMiddle(n_holes=n_holes)
 
     elif exp_key == "QuantumProbabilityAgent":
-        agent = QuantumProbabilityAgent(n_holes =n_holes, print_hole_prob=plot_probabilities, prob_1=prob1,prob_2=prob2)
+        agent = QuantumProbabilityAgent(n_holes =n_holes, print_holeprob=plot_probabilities, prob_1=prob1,prob_2=prob2, tunneling_prob= tunneling_prob)
 
 
     else:
@@ -56,8 +58,16 @@ def run():
     # Start training the agent
     else:
         pass
-    env = QFIAHv1(n_holes=n_holes, len_state=2, max_steps = max_steps, prob_1=prob1, prob_2=prob2)
-    
+
+    if env_name == "FoxInAHolev2":
+        env = FoxInAHolev2(n_holes=n_holes, len_state=2, max_steps = max_steps)
+    elif env_name == "QFIAHv1":
+        env = QFIAHv1(n_holes, len_state = 2, max_steps = 6, prob_1 = prob1, prob_2= prob2)
+    elif env_name == "QFIAHv2":
+        env = QFIAHv2(n_holes, len_state = 2, max_steps = 6, prob_1 = prob1, prob_2= prob2, tunneling_prob= tunneling_prob)
+    else:
+        raise ValueError
+
     episode_reward_history = []
     episode_length_history = []
     for _ in tqdm(range(n_episodes)):
@@ -92,7 +102,7 @@ def run():
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f'./rewards{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2/'
+        directory = f'./rewards{env_name}env{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2{tunneling_prob}tunnelingprob/'
 
         if not os.path.isdir(directory):
             os.mkdir(directory)
@@ -111,7 +121,7 @@ def run():
     if save_data:
 
         # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-        directory = f'./lengths{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2/'
+        directory = f'./lengths{env_name}env{exp_key}{n_holes}holes{n_episodes}neps{max_steps}steps{round(prob1,2)}prob1{round(prob2,2)}prob2{tunneling_prob}tunnelingprob/'
 
         if not os.path.isdir(directory):
             os.mkdir(directory)

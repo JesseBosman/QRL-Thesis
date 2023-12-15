@@ -17,7 +17,7 @@ save_length = True
 save_reward = True
 RxCnot = True
 
-env_name = "FoxInAHolev2"
+env_name = "QFIAHv2"
 len_state = 2
 prob_1= 3/14
 prob_2= 11/14
@@ -54,7 +54,7 @@ start = 1
 
 lr = 0.01
 
-n_reps = 9
+n_reps = 10
 
 print("Hyperparameters are:")
 print("lr: {}".format(lr))

@@ -6,6 +6,7 @@ import os
 import multiprocessing as mp
 from itertools import combinations
 import argparse
+from tools import generate_givens_wall
 
 # settings for writing the files, plotting
 plotting = False
@@ -14,8 +15,7 @@ save_data = True
 print_model_summary = True
 print_policy = True
 plot_distribution = False
-save_length = True
-save_reward = True
+
 
 state_bounds = 1
 gamma = 1
@@ -25,13 +25,10 @@ averaging_window = 5000
 anil= 0.25
 start = 1
 
-
-
-
 # Start training the agent
 # for _ in range(n_reps):
 def run(len_state=2, prob_1=3/14, prob_2=11/14, n_episodes = 250000, n_holes = 5, max_steps = 6, batch_size = 10, env_name="FoxInAHolev2",
-        lr_in = 0.01, lr_var= 0.01, lr_out = 0.01, n_layers = 2, n_qubits = 2, RxCnot = True, exp_key = "default"):
+        lr_in = 0.01, lr_var= 0.01, lr_out = 0.01, n_layers = 2, n_qubits = 2, RxCnot = True, exp_key = "default", givens_wall= None):
     from REINFORCE import reinforce_agent
     # from PQC import generate_model_policy, reinforce_update
     from PQC import generate_model_policy, reinforce_update
@@ -62,14 +59,11 @@ def run(len_state=2, prob_1=3/14, prob_2=11/14, n_episodes = 250000, n_holes = 5
     #     possible_states = tf.convert_to_tensor(possible_states)
 
     # probs_total = np.zeros(n_holes)
+
     for batch in tqdm(range(n_batches)):
         # # Gather episodes
-        # if plot_distribution and (batch==0 or batch/n_batches==0.25 or batch/n_batches==0.5 or batch/n_batches == 0.75 or batch==n_batches-1):
-        #     probs = model(possible_states)
-        #     probs_avg = np.average(probs, axis=0)
-        #     print("the probs at batch {} are {}".format(batch, probs_avg))
-        #     pass
-        episodes = agent.gather_episodes(state_bounds, n_holes, n_qubits, model, batch_size, env_name, len_state, max_steps= max_steps, prob_1=prob_1, prob_2=prob_2)
+
+        episodes = agent.gather_episodes(state_bounds, n_holes, n_qubits, model, batch_size, env_name, len_state, max_steps= max_steps, prob_1=prob_1, prob_2=prob_2, givens_wall= givens_wall)
 
         # Group states, actions and returns in numpy arrays
         states = np.concatenate([ep['states'] for ep in episodes])
@@ -97,7 +91,19 @@ def run(len_state=2, prob_1=3/14, prob_2=11/14, n_episodes = 250000, n_holes = 5
             'Average rewards: ', avg_rewards)
             
     if plotting:
-        plot(episode_reward_history, "NN", averaging_window)
+        plot(episode_reward_history, "PQC", averaging_window)
+
+    final_episodes = agent.gather_episodes(state_bounds, n_holes, n_holes, model, 1000, env_name, len_state=len_state, max_steps = max_steps, prob_1=prob_1, prob_2=prob_2, givens_wall= givens_wall)
+    final_rewards = [ep['rewards'] for ep in final_episodes]
+    final_episode_lengths= []
+
+    for ep_rwds in final_rewards:
+        final_episode_lengths.append(len(ep_rwds))
+
+    avg_final_episode_lengths = np.mean(final_episode_lengths)
+    std_final_episode_lengths = np.std(final_episode_lengths)
+
+    print("The final performance averaged over 1000 episodes was {} +- {}.".format(avg_final_episode_lengths, std_final_episode_lengths))
 
     if print_policy:
         state = tf.convert_to_tensor([-1*np.ones(len_state)])
@@ -114,51 +120,37 @@ def run(len_state=2, prob_1=3/14, prob_2=11/14, n_episodes = 250000, n_holes = 5
 
     if save_data:
 
-        if save_length:
+        # first save the trained model
+        directory = f"/home/s2025396/data1/resultsQRL/NEW/PQC/saved_models/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
-            # the path to where we save the results. we take the first letter of every _ argument block to determine this path
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
 
-            # ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
-            
-            # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+        model.save(directory)
 
-            if not os.path.isdir(directory):
-                os.mkdir(directory)
+        # the path to where we save the results. we take the first letter of every _ argument block to determine this path
 
-            print(f"Storing results in {directory}")
+        # ALICE
+        directory = f"/home/s2025396/data1/resultsQRL/NEW/PQC/episode_lengths/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
+        
+        ## WORKSTATION
+        # directory = f"/data1/bosman/resultsQRL/PQC/ep_length/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
 
-            # add date and time to filename to create seperate files with the same setting.
-            dt = str(datetime.datetime.now()).split()
-            time = f";".join(dt[1].split(":"))
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
 
-            directory += f"-".join((dt[0], time)) + ".npy"
+        print(f"Storing results in {directory}")
 
+        # add date and time to filename to create seperate files with the same setting.
+        dt = str(datetime.datetime.now()).split()
+        time = f";".join(dt[1].split(":"))
 
-            np.save(directory, episode_length_history)
-
-        if save_reward:
-
-            # the path to where we save the results. we take the first letter of every _ argument block to determine this path
-            #ALICE
-            directory = f"/home/s2025396/data1/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f"lrout{lr_out}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
-
-            # # WORKSTATION
-            # directory = f"/data1/bosman/resultsQRL/PQC/ep_reward/"+exp_key+f'{n_holes}holes'+f'{n_qubits}qubits'+f'{n_layers}layers'+f'neps{n_episodes}'+f"lrin{lr_in}"+f"lrvar{lr_var}"+f'bsize{batch_size}'+f"gamma{gamma}"+f"start{start}anil{anil}/"
-            if not os.path.isdir(directory):
-                os.mkdir(directory)
-
-            print(f"Storing results in {directory}")
-
-            # add date and time to filename to create seperate files with the same setting.
-            dt = str(datetime.datetime.now()).split()
-            time = f";".join(dt[1].split(":"))
-
-            directory += f"-".join((dt[0], time)) + ".npy"
+        directory += f"-".join((dt[0], time)) + ".npy"
 
 
-            np.save(directory, episode_reward_history)
+        np.save(directory, episode_length_history)
+
+        
 
     if print_model_summary:
         model.summary()
@@ -184,7 +176,10 @@ if __name__ == '__main__':
     argparser.add_argument("--n_layers", "-nl", type = int, default= 2, help="The amount of layers.")
     argparser.add_argument("--RxCnot", "-Rx", type = int, default= 0, choices= [0,1], help="Use the PQC with RxCnot architecture or not. 0= True, 1= False")
     argparser.add_argument("--n_reps","-nr", type = int, default= 10, help = "The amount of repetitions to run.")
-
+    argparser.add_argument("--brick1", "-b1", type = str, default="gx", help="The type of brick for the 1st brick in the Givens wall. Note that due ot rules of matrix multiplication, the 2nd brick comes first in the wall.")
+    argparser.add_argument("--theta1", "-t1", type = float, default=0.25, help="The rotation parameter for the 1st brick in the Givens wall. Will be mutliplied with pi.")
+    argparser.add_argument("--brick2", "-b2", type = str, default="gy", help="The type of brick for the 2nd brick in the Givens wall.")
+    argparser.add_argument("--theta2", "-t2", type = float, default=0.25, help="The rotation parameter for the 2nd brick in the Givens wall. Will be muliplied with pi.")
     args = argparser.parse_args()
     len_state = args.len_state
     prob_1= args.prob_1
@@ -200,6 +195,12 @@ if __name__ == '__main__':
     n_layers = args.n_layers
     n_qubits = n_holes
     RxCnot = args.RxCnot
+    brick1= args.brick1
+    theta1= args.theta1 *np.pi
+    brick2 = args.brick2
+    theta2 = args.theta2 * np.pi
+
+    givens_wall = None
     if RxCnot ==0:
         RxCnot = False
     elif RxCnot == 1:
@@ -217,13 +218,21 @@ if __name__ == '__main__':
 
     print("The number of cores available is {}".format(n_cores))
     
-    if env_name.lower()== 'qfiahv1'or 'qfiahv2':
+    if env_name.lower()== 'qfiahv1'or env_name.lower()=='qfiahv2':
         if RxCnot:
             exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-PQC-v4-RxCNOT"
 
         else:
             exp_key = f"{len_state}-inp-{env_name}-prob1{round(prob_1,2)}-prob2{round(prob_2,2)}-maxsteps{max_steps}-PQC-v4"
         
+    elif env_name.lower()=="givens":
+        givens_wall = generate_givens_wall(n_qubits, brick1, theta1, brick2, theta2)
+        if RxCnot:
+            exp_key = f"{len_state}-inp-{env_name}-{brick1}{round(theta1,2)}-{brick2}{round(theta2,2)}-maxsteps{max_steps}-PQC-v4-RxCNOT"
+
+        else:
+            exp_key = f"{len_state}-inp-{env_name}-{brick1}{round(theta1,2)}-{brick2}{round(theta2,2)}-maxsteps{max_steps}-PQC-v4"
+
     else:
         if RxCnot:
             exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-PQC-v4-RxCNOT"
@@ -231,9 +240,12 @@ if __name__ == '__main__':
         else:
             exp_key = f"{len_state}-inp-{env_name}-maxsteps{max_steps}-PQC-v4"
 
-    print("(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key)")
-    print(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key)
+    # run(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key)
+
+    print("(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key, brick1, theta1, brick2, theta2)")
+    print(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key, brick1, theta1, brick2, theta2)
+    # run(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key, givens_wall)
     p = mp.Pool(int(n_cores))
-    res = p.starmap(run, [(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key) for _ in range(n_reps)])
+    res = p.starmap(run, [(len_state, prob_1, prob_2, n_episodes, n_holes, max_steps, batch_size, env_name, lr_in, lr_var, lr_out, n_layers, n_qubits, RxCnot, exp_key, givens_wall) for _ in range(n_reps)])
     p.close()
     p.join()

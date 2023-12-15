@@ -94,11 +94,17 @@ class PickMiddle():
 
 
 class QuantumProbabilityAgent():
-    def __init__(self, n_holes, print_hole_prob, prob_1, prob_2):
-        split_1= prob_1**(0.5)
-        split_2= prob_2**(0.5)
+    def __init__(self, n_holes, max_steps=None, prob_1= 0.5, prob_2= 0.5, tunneling_prob=0.2, print_holeprob = False):
+        split_1 = (prob_1*(1-tunneling_prob))**(0.5)
+        split_2 = (prob_2*(1-tunneling_prob))**(0.5)
+        tunnel_split_1 = (prob_1*tunneling_prob)**(0.5)
+        tunnel_split_2 = (prob_2*tunneling_prob)**(0.5)
         self.n_holes = n_holes
-        self.print_holeprob = print_hole_prob
+        if max_steps ==None:
+            self.max_steps = 2*(n_holes-2)
+        else:
+            self.max_steps = max_steps
+        self.print_holeprob= print_holeprob
         self.action = None
         self.current_policy_sequence = []
         self.longest_policy_sequence = []
@@ -108,14 +114,52 @@ class QuantumProbabilityAgent():
         for i in range(n_holes -2):
             T_odd[i,i+1]= split_1
             T_odd[i+2, i+1]= split_2
-
             T_even[i, i+1]= split_2
             T_even[i+2, i+1]= -1*split_1
+
+            try:
+                T_odd[i,i+2]= tunnel_split_1
+            except:
+                pass
+            try:
+                T_odd[i+2, i]= tunnel_split_2
+            except:
+                pass
+
+            try:
+                T_even[i, i+2]= tunnel_split_2
+            except:
+                pass
+
+            try:
+                T_even[i+2, i]= -1*tunnel_split_1
+            
+            except:
+                pass
         
-        T_odd[1,0]=1
-        T_odd[-2,-1]= 1 
-        T_even[1,0]=-1
-        T_even[-2,-1]= 1
+        T_odd[-1,-2] = prob_2**(0.5)
+        T_odd[0,1] = prob_1**(0.5)
+
+        T_even[-1,-2] = -prob_1**(0.5)
+        T_even[0,1] = prob_2**(0.5)
+      
+        # Hier nog tunneling aanpassen!
+
+        T_odd[1,0]=(1-tunneling_prob)
+        T_odd[2,0]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_odd[-2,-1]= (1-tunneling_prob)
+        T_odd[-3,-1]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_even[1,0]=-(1-tunneling_prob)
+        T_even[2,0]= -((1-tunneling_prob)*tunneling_prob)**(0.5)
+        T_even[-2,-1]= (1-tunneling_prob)
+        T_even[-3,-1]= ((1-tunneling_prob)*tunneling_prob)**(0.5)
+
+        T_odd[-1,0]= tunneling_prob**(0.5)
+        T_odd[0,-1]= tunneling_prob**(0.5)
+
+        T_even[-1,0]= tunneling_prob**(0.5)
+        T_even[0,-1]= -tunneling_prob**(0.5)
+
         self.T_odd = T_odd
         self.T_even = T_even
         

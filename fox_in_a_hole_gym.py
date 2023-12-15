@@ -1,4 +1,5 @@
 import numpy as np
+from tools import generate_givens_wall
 # import tensorflow as tf
 # import tensorflow_quantum as tfq
 # import cirq
@@ -446,6 +447,65 @@ class QFIAHv2():
         game_state[0]=action
         self.game_state = game_state
         prob_correct = self.fox_state[action]**2
+        coin = np.random.random(1)
+
+        if prob_correct>coin:
+            reward = 1
+            done = True
+        
+        else:
+            reward = -1
+            if self.move_counter== self.max_steps-1:
+                done = True
+            else:
+                done = False
+                fox_state = self.fox_state
+                fox_state[action]= 0
+                norm = np.linalg.norm(fox_state)
+                self.fox_state= fox_state/norm
+                self.move_fox()
+
+        return self.game_state, reward, done, {}
+
+class Givens():
+    """
+    Class for a quantum version of FoxInAHole, where each timestep the fox state is evolved
+      according to a wall of Givens operators.
+    """
+    def __init__(self, n_holes, len_state, max_steps=None, givens_wall= None):
+        
+        self.len_state = len_state
+        self.n_holes= n_holes
+        if max_steps ==None:
+            self.max_steps = 2*(n_holes-2)
+        else:
+            self.max_steps = max_steps
+       
+        self.wall_matrix = givens_wall
+
+    def reset(self):
+
+        initial_hole = np.random.randint(0,5,1)
+        self.fox_state= np.zeros(self.n_holes)
+        self.fox_state[initial_hole]=1
+        self.game_state = np.ones(self.len_state)*-1
+        self.move_counter = 0
+
+
+        return self.game_state
+
+    def move_fox(self):
+        fox_state =self.fox_state
+        fox_state= np.matmul(self.wall_matrix, fox_state)
+        self.fox_state = fox_state
+        self.move_counter+=1
+        pass
+        
+    def step(self, action):
+        game_state = np.roll(self.game_state, 1)
+        game_state[0]=action
+        self.game_state = game_state
+        prob_correct = np.abs(self.fox_state[action])**2
         coin = np.random.random(1)
 
         if prob_correct>coin:

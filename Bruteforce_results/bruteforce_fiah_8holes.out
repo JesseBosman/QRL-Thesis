@@ -1,0 +1,17 @@
+#### starting bruteforce 
+This is s2025396 and my the job has the ID 2273148
+This job was submitted from /data1/s2025396/QRL-Thesis and i am currently in /home/s2025396/data1/QRL-Thesis
+[/bin/bash] ## Run script
+Parameters are: n_guesses 11, n_holes 8, env fiah, b1 gx, t1 3.141592653589793, b2 gy, t2 1.5707963267948966
+1: 1.8750 [0], 0.00, 1                                                                                                             
+2: 2.5625 [1 1], 0.00, 2                                                                                                             
+3: 3.0938 [1 6 2], 0.01, 3                                                                                                             
+4: 3.5000 [6 6 2 2], 0.08, 4                                                                                                             
+5: 3.8047 [4 1 1 6 3], 0.68, 5                                                                                                             
+6: 4.0195 [3 6 6 1 4 2], 5.87, 6                                                                                                             
+7: 4.1914 [3 6 6 1 4 2 1], 51.37, 7                                                                                                             
+8: 4.3184 [1 1 4 6 6 4 1 1], 422.59, 8                                                                                                             
+9: 4.4180 [6 6 3 1 1 3 6 6 3], 3459.01, 9                                                                                                             
+10: 4.4937 [6 6 3 1 1 3 6 6 3 1], 29914.13, 10                                                                                                             
+11: 4.5503 [1 1 4 6 6 4 1 1 4 6 3], 250896.73, 11                                                                                                             
+[/bin/bash] ## Finished

@@ -1,0 +1,68 @@
+#### starting bruteforce 
+This is s2025396 and my the job has the ID 2291899
+This job was submitted from /data1/s2025396/QRL-Thesis and i am currently in /home/s2025396/data1/QRL-Thesis
+[/bin/bash] ## Run script
+Parameters are: n_guesses 10, n_holes 8, env givens, b1 gy, t1 0.7853981633974483, b2 gx, t2 0.7853981633974483
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+1: 1.8750 [3], 0.00, 1                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+2: 2.5000 [0 7], 0.00, 2                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+3: 2.8984 [4 7 2], 0.01, 3                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+4: 3.1338 [4 7 2 6], 0.11, 4                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+5: 3.2965 [4 7 4 1 4], 0.97, 5                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+6: 3.4034 [4 7 4 1 4 6], 8.89, 6                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+7: 3.4620 [3 7 4 7 2 6 0], 75.97, 7                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+8: 3.4831 [4 7 4 1 7 2 7 1], 695.98, 8                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+9: 3.4949 [4 7 4 1 7 2 7 1 7], 6224.58, 9                                                                                                             
+Environment: givens 8 holes gy0.7853981633974483gx0.7853981633974483
+10: 3.5036 [4 7 4 1 7 2 7 1 7 3], 53742.82, 10                                                                                                             
+Parameters are: n_guesses 10, n_holes 8, env givens, b1 gx, t1 3.141592653589793, b2 gy, t2 1.5707963267948966
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+1: 1.8750 [0], 0.00, 1                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+2: 2.6250 [1 0], 0.00, 2                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+3: 3.2500 [1 1 0], 0.01, 3                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+4: 3.7500 [3 1 1 0], 0.12, 4                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+5: 4.1250 [3 3 1 1 0], 0.97, 5                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+6: 4.3750 [5 3 3 1 1 0], 8.57, 6                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+7: 4.5000 [5 5 3 3 1 1 0], 86.85, 7                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+8: 4.5000 [7 5 5 3 3 1 1 0], 755.40, 8                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+9: 4.5000 [7 5 5 3 3 1 1 0 0], 6005.58, 9                                                                                                             
+Environment: givens 8 holes gx3.141592653589793gy1.5707963267948966
+10: 4.5000 [7 5 5 3 3 1 1 0 0 0], 54869.26, 10                                                                                                             
+Parameters are: n_guesses 10, n_holes 8, env givens, b1 gx, t1 0.7853981633974483, b2 gy, t2 1.5707963267948966
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+1: 1.8750 [0], 0.00, 1                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+2: 2.6250 [3 0], 0.00, 2                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+3: 3.2188 [1 5 0], 0.02, 3                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+4: 3.5469 [3 2 2 5], 0.15, 4                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+5: 3.6484 [1 5 0 6 6], 1.34, 5                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+6: 3.7109 [1 5 0 6 6 2], 12.62, 6                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+7: 3.7480 [1 5 0 6 6 2 2], 88.68, 7                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+8: 3.7725 [1 5 0 6 6 2 2 7], 749.56, 8                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+9: 3.7808 [1 5 0 6 6 2 7 4 2], 6756.74, 9                                                                                                             
+Environment: givens 8 holes gx0.7853981633974483gy1.5707963267948966
+10: 3.7856 [1 5 0 6 6 2 7 4 2 2], 56200.11, 10                                                                                                             
+[/bin/bash] ## Finished

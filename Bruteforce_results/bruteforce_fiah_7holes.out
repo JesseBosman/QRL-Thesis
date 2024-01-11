@@ -1,0 +1,17 @@
+#### starting bruteforce 
+This is s2025396 and my the job has the ID 2167375
+This job was submitted from /data1/s2025396/QRL-Thesis and i am currently in /home/s2025396/data1/QRL-Thesis
+[/bin/bash] ## Run script
+/cm/local/apps/slurm/var/spool/job2167375/slurm_script: line 19: deactivate: command not found
+Parameters are: n_guesses 10, n_holes 7, env fiah, b1 gx, t1 0.7853981633974483, b2 gy, t2 1.5707963267948966
+1: 1.8571 [4], 0.00, 1                                                                                                             
+2: 2.5000 [1 1], 0.00, 2                                                                                                             
+3: 2.9643 [3 1 4], 0.02, 3                                                                                                             
+4: 3.3036 [5 5 2 2], 0.08, 4                                                                                                             
+5: 3.5268 [5 5 1 1 4], 0.36, 5                                                                                                             
+6: 3.6920 [1 1 5 5 2 2], 2.68, 6                                                                                                             
+7: 3.8080 [1 1 4 5 5 2 2], 20.89, 7                                                                                                             
+8: 3.8984 [5 5 2 1 1 4 4 4], 158.50, 8                                                                                                             
+9: 3.9609 [1 5 2 1 5 4 1 5 2], 1153.15, 9                                                                                                             
+10: 4.0017 [1 5 2 1 5 4 1 5 3 1], 8915.13, 10                                                                                                             
+[/bin/bash] ## Finished

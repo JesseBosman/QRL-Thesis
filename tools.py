@@ -129,7 +129,7 @@ def generate_fiah_transfer_matrix(n_holes):
     matrix[-2,-1]=1
     return matrix
 
-def retrieve_transfer_matrices(env_name, n_holes, prob_1, tunneling_prob, brick1, theta1, brick2, theta2):
+def retrieve_transfer_matrices(env_name, n_holes=5, prob_1=0, tunneling_prob=0, brick1='gx', theta1= 0, brick2= 'gy', theta2= 0):
     if env_name.lower() == "givens":
         return generate_givens_wall(n_holes, brick1, theta1, brick2, theta2)
     

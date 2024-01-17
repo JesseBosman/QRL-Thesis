@@ -1,79 +1,119 @@
-import pygame
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
 import random
+from fox_in_a_hole_gym import FIAH, Givens
+from tools import generate_fiah_transfer_matrix, generate_givens_wall
+import numpy as np
 
-# Initialize pygame
-pygame.init()
+class GameGUI:
+    def __init__(self):
+        self.window = Tk()
+        self.window.title("Fox Game")
+        self.create_start_menu()
+        self.game_state = None
 
-# Set up the game window
-window_width = 800
-window_height = 600
-window = pygame.display.set_mode((window_width, window_height))
-RED = (255, 0, 0)
-run = True
-while run:
-    pygame.draw.rect(window, RED, (400, 400, 20, 20), 0)
-    window.fill(RED)
-    pygame.display.update()
-# pygame.display.set_caption("Find the Fox")
 
-# # Define colors
-# BLACK = (0, 0, 0)
-# WHITE = (255, 255, 255)
-# GREEN = (0, 255, 0)
+    def create_start_menu(self):
+        self.label_holes = Label(self.window, text="Enter the number of holes:")
+        self.label_holes.pack()
 
-# # Define hole properties
-# hole_radius = 30
-# hole_gap = 100
-# hole_y = window_height // 2
+        self.holes_entry = Entry(self.window)
+        self.holes_entry.pack()
 
-# # Define fox properties
-# fox_radius = 20
-# fox_x = random.randint(hole_radius, window_width - hole_radius)
-# fox_y = hole_y
+        self.label_game = Label(self.window, text="Enter the game type (FIAH or Givens):")
+        self.label_game.pack()
 
-# # Game loop
-# running = True
-# found_fox = False
+        self.game_entry = Entry(self.window)
+        self.game_entry.pack()
 
-# while running:
-#     # Handle events
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         elif event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_1:
-#                 if fox_x == (window_width // 2) - (hole_gap + 2 * hole_radius):
-#                     found_fox = True
-#             elif event.key == pygame.K_2:
-#                 if fox_x == (window_width // 2):
-#                     found_fox = True
-#             elif event.key == pygame.K_3:
-#                 if fox_x == (window_width // 2) + (hole_gap + 2 * hole_radius):
-#                     found_fox = True
+        self.b1_label = Label(self.window, text="Enter the Givens gate for the first layer:")
+        self.b1_label.pack()
 
-#     # Clear the screen
-#     window.fill(BLACK)
+        self.b1_entry = Entry(self.window)
+        self.b1_entry.pack()
 
-#     # Draw holes
-#     for i in range(3):
-#         hole_x = (window_width // 2) + (i - 1) * (hole_gap + 2 * hole_radius)
-#         pygame.draw.circle(window, WHITE, (hole_x, hole_y), hole_radius)
+        self.t1_label = Label(self.window, text="Enter the rotation for the first layer:")
+        self.t1_label.pack()
 
-#     # Draw fox
-#     pygame.draw.circle(window, GREEN, (fox_x, fox_y), fox_radius)
+        self.t1_entry = Entry(self.window)
+        self.t1_entry.pack()
 
-#     # Update the display
-#     pygame.display.flip()
+        self.b2_label = Label(self.window, text="Enter the Givens gate for the second layer:")
+        self.b2_label.pack()
 
-#     # Move the fox during the night
-#     if not found_fox:
-#         if fox_x == (window_width // 2) - (hole_gap + 2 * hole_radius):
-#             fox_x += hole_gap + 2 * hole_radius
-#         elif fox_x == (window_width // 2) + (hole_gap + 2 * hole_radius):
-#             fox_x -= hole_gap + 2 * hole_radius
-#         else:
-#             move_direction = random.choice([-1, 1])
-#             fox_x += move_direction * (hole_gap + 2 * hole_radius)
+        self.b2_entry = Entry(self.window)
+        self.b2_entry.pack()
 
-# # Quit the game
-# pygame.quit()
+        self.t2_label = Label(self.window, text="Enter the rotation for the second layer:")
+        self.t2_label.pack()
+        self.t2_entry = Entry(self.window)
+        self.t2_entry.pack()
+
+        self.start_button = Button(self.window, text="Start", command=self.start_game)
+        self.start_button.pack()
+
+    def start_game(self):
+        n_holes = int(self.holes_entry.get())
+        game_type = self.game_entry.get()
+
+
+        if game_type == "FIAH":
+            transfer_matrix = generate_fiah_transfer_matrix(n_holes)
+            self.game = FIAH(max_steps = 10, transfer_matrices = transfer_matrix)
+        elif game_type == "Givens":
+            b1 = self.b1_entry.get()
+            t1 = float(self.t1_entry.get())
+            print(t1)
+            print(type(t1))
+            b2 = self.b2_entry.get()
+            t2 = float(self.t2_entry.get())
+            transfer_matrix = generate_givens_wall(n_holes, b1, t1, b2, t2)
+            self.game = Givens(max_steps = 10, transfer_matrices = transfer_matrix)
+        else:
+            raise ValueError("Invalid game type")
+
+        self.game.reset()
+        self.create_game_gui()
+
+    def create_game_gui(self):
+        self.label_holes.destroy()
+        self.holes_entry.destroy()
+        self.label_game.destroy()
+        self.game_entry.destroy()
+        self.b1_label.destroy()
+        self.b1_entry.destroy()
+        self.t1_label.destroy()
+        self.t1_entry.destroy()
+        self.b2_label.destroy()
+        self.b2_entry.destroy()
+        self.t2_label.destroy()
+        self.t2_entry.destroy()
+        self.start_button.destroy()
+
+        self.label = Label(self.window, text="Choose a hole to check:")
+        self.label.pack()
+
+        self.buttons = []
+        for i in range(1, self.game.n_holes + 1):
+            button = Button(self.window, text=str(i), command=lambda i=i: self.check_hole(i))
+            button.pack()
+            self.buttons.append(button)
+
+    def check_hole(self, hole):
+        self.game_state, reward, done, _ = self.game.step(hole)
+        result = "You found the fox!" if reward == 0 else "You did not find the fox."
+
+        messagebox.showinfo("Result", result)
+        if reward == 0:
+            for button in self.buttons:
+                button.config(state=DISABLED)
+
+    def start(self):
+        self.window.mainloop()
+
+# Create the GUI for the game
+gui = GameGUI()
+
+# Start the game
+gui.start()

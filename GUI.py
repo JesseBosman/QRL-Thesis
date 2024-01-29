@@ -9,7 +9,7 @@ import numpy as np
 class GameGUI:
     def __init__(self):
         self.window = Tk()
-        self.window.title("Fox Game")
+        self.window.title("Fox in A Hole")
         self.create_start_menu()
         self.game_state = None
 
@@ -64,8 +64,6 @@ class GameGUI:
         elif game_type == "Givens":
             b1 = self.b1_entry.get()
             t1 = float(self.t1_entry.get())
-            print(t1)
-            print(type(t1))
             b2 = self.b2_entry.get()
             t2 = float(self.t2_entry.get())
             transfer_matrix = generate_givens_wall(n_holes, b1, t1, b2, t2)
@@ -75,8 +73,8 @@ class GameGUI:
 
         self.game.reset()
         self.create_game_gui()
-
-    def create_game_gui(self):
+    
+    def destroy_start_menu(self):
         self.label_holes.destroy()
         self.holes_entry.destroy()
         self.label_game.destroy()
@@ -91,8 +89,23 @@ class GameGUI:
         self.t2_entry.destroy()
         self.start_button.destroy()
 
-        self.label = Label(self.window, text="Choose a hole to check:")
-        self.label.pack()
+    def destroy_game_gui(self):
+        self.intstruction_label.destroy()
+        self.guess_counter_label.destroy()
+        for button in self.buttons:
+            button.destroy()
+
+    def create_game_gui(self):
+        self.destroy_start_menu()
+
+        self.intstruction_label = Label(self.window, text="Choose a hole to check:")
+        self.intstruction_label.pack()
+
+        self.guess_counter = 0
+        self.guess_var = IntVar()
+        self.guess_var.set(self.guess_counter)
+        self.guess_counter_label = Label(self.window, text="Guesses: ", textvariable=self.guess_var)
+        self.guess_counter_label.pack()
 
         self.buttons = []
         for i in range(1, self.game.n_holes + 1):
@@ -100,14 +113,29 @@ class GameGUI:
             button.pack()
             self.buttons.append(button)
 
+    def continue_game(self):
+        self.destroy_game_gui()
+        self.create_game_gui()
+
+    def new_settings(self):
+        self.destroy_game_gui()
+        self.create_start_menu()
+        
     def check_hole(self, hole):
-        self.game_state, reward, done, _ = self.game.step(hole)
+
+        self.guess_counter += 1
+        self.guess_var.set(self.guess_counter)
+
+        self.window.update_idletasks()
+        self.game_state, reward, done, _ = self.game.step(hole-1)
         result = "You found the fox!" if reward == 0 else "You did not find the fox."
 
         messagebox.showinfo("Result", result)
         if reward == 0:
             for button in self.buttons:
                 button.config(state=DISABLED)
+
+
 
     def start(self):
         self.window.mainloop()

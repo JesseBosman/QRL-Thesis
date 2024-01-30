@@ -1,15 +1,15 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
-import random
+import tkinter
+import tkinter.messagebox
+import customtkinter
+from customtkinter import *
 from fox_in_a_hole_gym import FIAH, Givens
 from tools import generate_fiah_transfer_matrix, generate_givens_wall
 import numpy as np
 
-class GameGUI:
+class GameGUI(customtkinter.CTk):
     def __init__(self):
-        self.window = Tk()
-        self.window.title("Fox in A Hole")
+        super().__init__()
+        self.title("Fox in A Hole")
         self.create_start_menu()
         self.game_state = None
         self.game = None
@@ -18,69 +18,67 @@ class GameGUI:
     
     def create_start_menu(self):
 
-        self.label_game = Label(self.window, text="Enter the game type (FIAH or Givens):")
-        self.label_game.pack()
+        self.label_game = CTkLabel(self, text="Select the game type:")
+        self.label_game.grid(row=0, column=0, columnspan=2)
 
-        self.game_entry = Entry(self.window)
-        self.game_entry.pack()
+        self.fiah_button = CTkButton(self, text="Classical", command=self.create_fiah_menu)
+        self.fiah_button.grid(row=1, column=0)
 
-        self.continue_button = Button(self.window, text="Continue", command=self.create_second_menu)
-        self.continue_button.pack()
-
-    def create_second_menu(self):
-        self.game_type = self.game_entry.get()
-        self.destroy_start_menu()
-        if self.game_type == "FIAH":
-            self.create_fiah_menu()
-        elif self.game_type == "Givens":
-            self.create_quantum_menu()
-        else:
-            raise ValueError("Invalid game type")
+        self.givens_button = CTkButton(self, text="Quantum", command=self.create_quantum_menu)
+        self.givens_button.grid(row=1, column=1)    
+    
+    def destroy_start_menu(self):
         
-        
+        self.label_game.destroy()
+        self.fiah_button.destroy()
+        self.givens_button.destroy()
         
 
     def create_fiah_menu(self):
-        self.label_holes = Label(self.window, text="Enter the number of holes:")
+        self.destroy_start_menu()
+        self.game_type = "FIAH"
+        self.label_holes = CTkLabel(self, text="Enter the number of holes:")
         self.label_holes.pack()
 
-        self.holes_entry = Entry(self.window)
+        self.holes_entry = CTkEntry(self)
         self.holes_entry.pack()
 
-        self.start_button = Button(self.window, text="Start", command=self.start_game)
+        self.start_button = CTkButton(self, text="Start", command=self.start_game)
         self.start_button.pack()
 
     def create_quantum_menu(self):
-        self.label_holes = Label(self.window, text="Enter the number of holes:")
+        self.destroy_start_menu()
+        self.game_type = "Givens"
+        self.label_holes = CTkLabel(self, text="Enter the number of holes:")
         self.label_holes.pack()
 
-        self.holes_entry = Entry(self.window)
+        self.holes_entry = CTkEntry(self)
         self.holes_entry.pack()
 
-        self.b1_label = Label(self.window, text="Enter the Givens gate for the first layer:")
+        self.b1_label = CTkLabel(self, text="Enter the Givens gate for the first layer:")
         self.b1_label.pack()
 
-        self.b1_entry = Entry(self.window)
+        self.b1_entry = CTkEntry(self)
         self.b1_entry.pack()
 
-        self.t1_label = Label(self.window, text="Enter the rotation in units of Pi for the first layer:")
+        self.t1_label = CTkLabel(self, text="Enter the rotation in units of Pi for the first layer:")
         self.t1_label.pack()
 
-        self.t1_entry = Entry(self.window)
+        self.t1_entry = CTkEntry(self)
         self.t1_entry.pack()
 
-        self.b2_label = Label(self.window, text="Enter the Givens gate for the second layer:")
+        self.b2_label = CTkLabel(self, text="Enter the Givens gate for the second layer:")
         self.b2_label.pack()
 
-        self.b2_entry = Entry(self.window)
+        self.b2_entry = CTkEntry(self)
         self.b2_entry.pack()
 
-        self.t2_label = Label(self.window, text="Enter the rotation in units of Pi for the second layer:")
+        self.t2_label = CTkLabel(self, text="Enter the rotation in units of Pi for the second layer:")
         self.t2_label.pack()
-        self.t2_entry = Entry(self.window)
+        self.t2_entry = CTkEntry(self)
         self.t2_entry.pack()
 
-        self.start_button = Button(self.window, text="Start", command=self.start_game)
+        self.start_button = CTkButton(self, text="Start", command=self.start_game)
         self.start_button.pack()
 
     def start_game(self):
@@ -126,60 +124,74 @@ class GameGUI:
         self.t2_entry.destroy()
         self.start_button.destroy()
         pass
-    def destroy_start_menu(self):
-        
-        self.label_game.destroy()
-        self.game_entry.destroy()
-        self.continue_button.destroy()
 
     def destroy_game_gui(self):
+        self.guesses_label.destroy()
         self.intstruction_label.destroy()
         self.guess_counter_label.destroy()
-        for button in self.buttons:
-            button.destroy()
+        for hole in self.holes:
+            hole.destroy()
 
     def create_game_gui(self):
-        self.intstruction_label = Label(self.window, text="Choose a hole to check:")
-        self.intstruction_label.pack()
-
+        self.guesses_label = CTkLabel(self, text="Number of guesses:")
+        self.guesses_label.grid(row=0, column=0, columnspan=self.game.n_holes)
         self.guess_counter = 0
         self.guess_var = IntVar()
         self.guess_var.set(self.guess_counter)
-        self.guess_counter_label = Label(self.window, text="Guesses: ", textvariable=self.guess_var)
-        self.guess_counter_label.pack()
-
-        self.buttons = []
+        self.guess_counter_label = CTkLabel(self, textvariable=self.guess_var)
+        self.guess_counter_label.grid(row=1, column=0, columnspan=self.game.n_holes)
+        
+        self.intstruction_label = CTkLabel(self, text="Choose a hole to check:")
+        self.intstruction_label.grid(row=2, column=0, columnspan=self.game.n_holes)
+        self.holes = []
         for i in range(1, self.game.n_holes + 1):
-            button = Button(self.window, text=str(i), command=lambda i=i: self.check_hole(i))
-            button.pack()
-            self.buttons.append(button)
-
-    def continue_game(self):
-        self.destroy_game_gui()
-        self.create_game_gui()
+            hole = CTkButton(self, text=str(i), command=lambda i=i: self.check_hole(i))
+            hole.grid(row=3, column=i-1)
+            self.holes.append(hole)
 
     def new_settings(self):
-        self.destroy_game_gui()
+        self.decision_label.destroy()
+        self.exit_button.destroy()
+        self.new_button.destroy()
+        self.continue_button.destroy()
         self.create_start_menu()
+    
+    def new_game(self):
+        self.decision_label.destroy()
+        self.exit_button.destroy()
+        self.new_button.destroy()
+        self.continue_button.destroy()
+        self.create_game_gui()
         
-    def check_hole(self, hole):
-
+    def check_hole(self, guess):
         self.guess_counter += 1
         self.guess_var.set(self.guess_counter)
 
-        self.window.update_idletasks()
-        self.game_state, reward, done, _ = self.game.step(hole-1)
-        result = "You found the fox!" if reward == 0 else "You did not find the fox."
+        self.update_idletasks()
+        self.game_state, reward, done, _ = self.game.step(guess-1)
 
-        messagebox.showinfo("Result", result)
         if reward == 0:
-            for button in self.buttons:
-                button.config(state=DISABLED)
+            for hole in self.holes:
+                hole.configure(state=DISABLED)
+            tkinter.messagebox.showinfo("Result", "You found the fox in " + str(self.guess_counter) + " guesses!")
+            self.destroy_game_gui()
+            self.decision_label = CTkLabel(self, text="Do you want to play again?")
+            self.decision_label.grid(row=0, column=0, columnspan=3)
+            self.exit_button = CTkButton(self, text="Quit", command=self.destroy)
+            self.exit_button.grid(row=1, column=0)
+            self.new_button = CTkButton(self, text="New Settings", command=self.new_settings)
+            self.new_button.grid(row=1, column=1)
+            self.continue_button = CTkButton(self, text="Continue", command=self.new_game)
+            self.continue_button.grid(row=1, column=2)
+
+        else:
+            tkinter.messagebox.showinfo("Result", "You did not find the fox. Try again.")
+
 
 
 
     def start(self):
-        self.window.mainloop()
+        self.mainloop()
 
 # Create the GUI for the game
 gui = GameGUI()

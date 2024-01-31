@@ -21,6 +21,8 @@ class GameGUI(customtkinter.CTk):
         self.game = None
         self.n_holes = None
         self.game_type = None
+
+
         self.hole_image = customtkinter.CTkImage(Image.open("hole_image.jpg"), size = (200,200))
 
         #.resize((1000, 1000), Image.LANCZOS)

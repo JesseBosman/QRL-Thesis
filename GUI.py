@@ -5,7 +5,13 @@ from customtkinter import *
 from fox_in_a_hole_gym import FIAH, Givens
 from tools import generate_fiah_transfer_matrix, generate_givens_wall
 import numpy as np
+from PIL import ImageTk, Image
+from sympy.printing import pretty
+from sympy import init_printing
 
+init_printing()
+
+customtkinter.set_default_color_theme("green")
 class GameGUI(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -15,6 +21,9 @@ class GameGUI(customtkinter.CTk):
         self.game = None
         self.n_holes = None
         self.game_type = None
+        self.hole_image = customtkinter.CTkImage(Image.open("hole_image.jpg"), size = (200,200))
+
+        #.resize((1000, 1000), Image.LANCZOS)
     
     def create_start_menu(self):
 
@@ -32,7 +41,7 @@ class GameGUI(customtkinter.CTk):
         self.label_game.destroy()
         self.fiah_button.destroy()
         self.givens_button.destroy()
-        
+    
 
     def create_fiah_menu(self):
         self.destroy_start_menu()
@@ -50,36 +59,49 @@ class GameGUI(customtkinter.CTk):
         self.destroy_start_menu()
         self.game_type = "Givens"
         self.label_holes = CTkLabel(self, text="Enter the number of holes:")
-        self.label_holes.pack()
+        self.label_holes.grid(row = 0, column = 1, columnspan = 3)
 
         self.holes_entry = CTkEntry(self)
-        self.holes_entry.pack()
+        self.holes_entry.grid(row = 1, column = 1, columnspan = 3)
 
         self.b1_label = CTkLabel(self, text="Enter the Givens gate for the first layer:")
-        self.b1_label.pack()
+        self.b1_label.grid(row = 2, column = 1, columnspan = 3)
 
-        self.b1_entry = CTkEntry(self)
-        self.b1_entry.pack()
+        self.b1_entry = CTkOptionMenu(self, values = ["Gx", "Gy", "Gz"])
+        self.b1_entry.grid(row = 3, column = 1, columnspan = 3)
 
-        self.t1_label = CTkLabel(self, text="Enter the rotation in units of Pi for the first layer:")
-        self.t1_label.pack()
+        self.t1_label = CTkLabel(self, text="Choose the rotation for the first layer of gates:")
+        self.t1_label.grid(row = 4, column = 1, columnspan = 3)
 
-        self.t1_entry = CTkEntry(self)
-        self.t1_entry.pack()
+        self.t1_entry = CTkSlider(self, from_ = 0, to = 2)
+        self.t1_entry.grid(row = 5, column = 1)
+
+        self.t1_left = CTkLabel(self, text = "0")
+        self.t1_left.grid(row = 5, column = 0)
+
+        self.t1_right = CTkLabel(self, text =("2"+ pretty('pi')))
+        self.t1_right.grid(row = 5, column = 2)
+
 
         self.b2_label = CTkLabel(self, text="Enter the Givens gate for the second layer:")
-        self.b2_label.pack()
+        self.b2_label.grid(row = 6 , column = 1 , columnspan = 3)
 
-        self.b2_entry = CTkEntry(self)
-        self.b2_entry.pack()
+        self.b2_entry = CTkOptionMenu(self, values = ["Gx", "Gy", "Gz"])
+        self.b2_entry.grid(row = 7 , column = 1 , columnspan = 3)
 
         self.t2_label = CTkLabel(self, text="Enter the rotation in units of Pi for the second layer:")
-        self.t2_label.pack()
-        self.t2_entry = CTkEntry(self)
-        self.t2_entry.pack()
+        self.t2_label.grid(row = 8 , column = 1 , columnspan = 3)
+        self.t2_entry = CTkSlider(self, from_ = 0, to = 2)
+        self.t2_entry.grid(row = 9 , column = 1)
+
+        self.t2_left = CTkLabel(self, text = "0")
+        self.t2_left.grid(row = 9, column = 0)
+
+        self.t2_right = CTkLabel(self, text =("2"+ pretty('pi')))
+        self.t2_right.grid(row = 9, column = 2)
 
         self.start_button = CTkButton(self, text="Start", command=self.start_game)
-        self.start_button.pack()
+        self.start_button.grid(row = 10, column = 1, columnspan = 3)
 
     def start_game(self):
         if self.game == None:
@@ -122,6 +144,10 @@ class GameGUI(customtkinter.CTk):
         self.b2_entry.destroy()
         self.t2_label.destroy()
         self.t2_entry.destroy()
+        self.t1_left.destroy()
+        self.t1_right.destroy()
+        self.t2_left.destroy()
+        self.t2_right.destroy()
         self.start_button.destroy()
         pass
 
@@ -133,6 +159,7 @@ class GameGUI(customtkinter.CTk):
             hole.destroy()
 
     def create_game_gui(self):
+        _ = self.game.reset()
         self.guesses_label = CTkLabel(self, text="Number of guesses:")
         self.guesses_label.grid(row=0, column=0, columnspan=self.game.n_holes)
         self.guess_counter = 0
@@ -145,7 +172,7 @@ class GameGUI(customtkinter.CTk):
         self.intstruction_label.grid(row=2, column=0, columnspan=self.game.n_holes)
         self.holes = []
         for i in range(1, self.game.n_holes + 1):
-            hole = CTkButton(self, text=str(i), command=lambda i=i: self.check_hole(i))
+            hole = CTkButton(self, text=f"Hole {i}", image = self.hole_image ,command=lambda i=i: self.check_hole(i), compound="bottom")
             hole.grid(row=3, column=i-1)
             self.holes.append(hole)
 

@@ -301,11 +301,64 @@ def write_results_to_csv():
         
         pass
 
+def random_policy_result_quantum(env_name, b1, t1, b2, t2, n_holes, n_guesses):
+    transfer_matrix = retrieve_transfer_matrices(env_name, n_holes, brick1=b1, theta1=t1, brick2=b2, theta2=t2)
+    state = np.ones(n_holes)/np.sqrt(n_holes)
+    avg = 0
+    for n in range(n_guesses):
+        norm = np.linalg.norm(state)
+        find_prob = norm/n_holes
+
+        avg += find_prob*(n+1)
+        state = state*np.sqrt(norm-find_prob)
+        state = np.inner(transfer_matrix,state)
+
+        # state = state/np.sum(state) # NORMALISE (Not the correct calculation)
+        # print(f"{n+1} {avg:.2f} {state} {np.sum(state)}")
+
+    avg += (n_guesses+1)*np.linalg.norm(state)
+
+    return avg
+
+
+def random_policy_result_classical(env_name, n_holes, n_guesses):
+    transfer_matrix = retrieve_transfer_matrices(env_name, n_holes)
+    state = np.ones(n_holes)/(n_holes)
+    avg = 0
+    for n in range(n_guesses):
+        norm = np.sum(state)
+        find_prob = norm/n_holes
+
+        avg += find_prob*(n+1)
+        state = state*(norm-find_prob)
+        state = np.inner(transfer_matrix,state)
+
+        # state = state/np.sum(state) # NORMALISE (Not the correct calculation)
+        # print(f"{n+1} {avg:.2f} {state} {np.sum(state)}")
+
+    avg += (n_guesses+1)*np.sum(state)
+
+    return avg
+
+def random_policy_result(n_holes, n_guesses):
+    avg = 0
+    find_prob = 1/n_holes
+    for n in range(n_guesses):
+        avg+= find_prob*(1-find_prob)**n*(n+1)
+
+    avg += (1-find_prob)**n_guesses*(n_guesses+1)
+
+    return avg
+
+
 
 
 
 
 if __name__ == "__main__":
-    write_results_to_csv()
+    for n in [5,6,7,8]:
+
+        print(random_policy_result(n, 10))
+
     
 

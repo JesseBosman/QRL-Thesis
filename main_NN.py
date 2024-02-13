@@ -140,7 +140,7 @@ def run(
     final_episode_lengths = []
 
     for ep_rwds in final_rewards:
-        if ep_rwds[-1] == 1:
+        if ep_rwds[-1] == 0:
             final_episode_lengths.append(len(ep_rwds))
         else:
             final_episode_lengths.append(len(ep_rwds) + 1)

@@ -173,8 +173,10 @@ class GameGUI(customtkinter.CTk):
         self.intstruction_label = CTkLabel(self, text="Choose a hole to check:")
         self.intstruction_label.grid(row=2, column=0, columnspan=self.game.n_holes)
         self.holes = []
+        max_width = self.winfo_width()/self.game.n_holes
+        self.hole_image = customtkinter.CTkImage(Image.open("hole_image.jpg"), size = (max_width, 100))
         for i in range(1, self.game.n_holes + 1):
-            hole = CTkButton(self, text=f"Hole {i}", image = self.hole_image ,command=lambda i=i: self.check_hole(i), compound="bottom")
+            hole = CTkButton(self, text = "", image = self.hole_image ,command=lambda i=i: self.check_hole(i), compound="bottom")
             hole.grid(row=3, column=i-1)
             self.holes.append(hole)
 
